@@ -770,7 +770,7 @@ class Api
      * @var bool       $params ['disable_web_page_preview']
      * @var string     $params ['reply_markup']
      *
-     * @return TelegramResponse
+     * @return Message
      */
     public function editMessageText(array $params)
     {
@@ -802,7 +802,7 @@ class Api
      * @var string     $params ['caption']
      * @var string     $params ['reply_markup']
      *
-     * @return TelegramResponse
+     * @return Message
      */
     public function editMessageCaption(array $params)
     {
@@ -832,7 +832,7 @@ class Api
      * @var string     $params ['inline_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return TelegramResponse
+     * @return Message
      */
     public function editMessageReplyMarkup(array $params)
     {
@@ -903,11 +903,12 @@ class Api
 
     /**
      * @param array $params
-     * @return TelegramResponse
+     * @return int
      */
     public function getChatMembersCount(array $params)
     {
-        return $this->post('getChatMembersCount', $params);
+        $result = $this->post('getChatMembersCount', $params);
+        return $result->getDecodedBody()['result'];
     }
 
     /**
