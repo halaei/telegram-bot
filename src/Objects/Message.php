@@ -75,6 +75,8 @@ class Message extends BaseObject
     }
 
     /**
+     * (Optional). Date the message was last edited in Unix time.
+     *
      * @return int
      */
     public function getEditDate()
