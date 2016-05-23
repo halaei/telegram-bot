@@ -896,9 +896,15 @@ class Api
      */
     public function getChatAdministrators(array $params)
     {
-        $response = $this->post('getChatAdministrators', $params);
+        $response = $this->post('getChatAdministrators', $params)->getDecodedBody()['result'];
 
-        return new ChatMember($response->getDecodedBody());
+        $members = [];
+
+        foreach ($response as $member) {
+            $members[] = new ChatMember($member);
+        }
+
+        return $members;
     }
 
     /**
