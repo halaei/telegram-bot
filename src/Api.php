@@ -5,6 +5,8 @@ namespace Telegram\Bot;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\HttpClients\HttpClientInterface;
+use Telegram\Bot\Objects\Chat;
+use Telegram\Bot\Objects\ChatMember;
 use Telegram\Bot\Objects\File;
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\UnknownObject;
@@ -875,6 +877,48 @@ class Api
         }
 
         return $this->post('answerInlineQuery', $params);
+    }
+
+    /**
+     * @param array $params
+     * @return Chat
+     */
+    public function getChat(array $params)
+    {
+        $response = $this->post('getChat', $params);
+
+        return new Chat($response->getDecodedBody());
+    }
+
+    /**
+     * @param array $params
+     * @return ChatMember
+     */
+    public function getChatAdministrators(array $params)
+    {
+        $response = $this->post('getChatAdministrators', $params);
+
+        return new ChatMember($response->getDecodedBody());
+    }
+
+    /**
+     * @param array $params
+     * @return TelegramResponse
+     */
+    public function getChatMembersCount(array $params)
+    {
+        return $this->post('getChatMembersCount', $params);
+    }
+
+    /**
+     * @param array $params
+     * @return ChatMember
+     */
+    public function getChatMember(array $params)
+    {
+        $response = $this->post('getChatMember', $params);
+
+        return new ChatMember($response->getDecodedBody());
     }
 
     /**

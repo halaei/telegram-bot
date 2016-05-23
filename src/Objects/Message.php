@@ -75,6 +75,14 @@ class Message extends BaseObject
     }
 
     /**
+     * @return int
+     */
+    public function getEditDate()
+    {
+        return (int) $this->get('edit_date');
+    }
+
+    /**
      * (Optional). Caption for the document, photo or video contact.
      *
      * @return string
