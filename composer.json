@@ -1,5 +1,5 @@
 {
-  "name": "irazasyed/telegram-bot-sdk",
+  "name": "halaei/telegram-bot-sdk",
   "description": "The Unofficial Telegram Bot API PHP SDK",
   "keywords": ["telegram", "telegram bot", "telegram bot api", "telegram sdk", "telegram php", "laravel telegram", "laravel"],
   "type": "library",
@@ -33,18 +33,5 @@
   "suggest": {
     "irazasyed/larasupport": "Allows you to use any Laravel Package in Lumen by adding support!",
     "illuminate/container": "Hold dependencies to be injected in commands constructors"
-  },
-  "scripts": {
-    "test": "phpunit"
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "3.0-dev"
-    }
-  },
-  "config": {
-    "preferred-install": "dist"
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+  }
 }
