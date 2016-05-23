@@ -892,7 +892,7 @@ class Api
 
     /**
      * @param array $params
-     * @return ChatMember
+     * @return ChatMember[]
      */
     public function getChatAdministrators(array $params)
     {
