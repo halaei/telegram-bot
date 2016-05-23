@@ -3,7 +3,6 @@
 namespace Telegram\Bot\Tests;
 
 use Telegram\Bot\Api;
-use Prophecy\Argument;
 use InvalidArgumentException;
 use Telegram\Bot\Objects\File;
 use Telegram\Bot\Objects\User;
@@ -67,14 +66,6 @@ class ApiTest extends \PHPUnit_Framework_TestCase
     public function it_checks_the_Client_object_is_returned()
     {
         $this->assertInstanceOf(TelegramClient::class, $this->api->getClient());
-    }
-
-    /** @test */
-    public function it_checks_an_ioc_container_can_be_set()
-    {
-        $this->api->setContainer(Mocker::createContainer()->reveal());
-
-        $this->assertInstanceOf('\Illuminate\Contracts\Container\Container', $this->api->getContainer());
     }
 
     /** @test */

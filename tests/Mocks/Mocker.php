@@ -2,120 +2,15 @@
 
 namespace Telegram\Bot\Tests\Mocks;
 
-use Illuminate\Contracts\Container\Container;
 use Telegram\Bot\Api;
-use Prophecy\Prophet;
-use Prophecy\Argument;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use Telegram\Bot\Objects\Update;
 use GuzzleHttp\Handler\MockHandler;
 use Telegram\Bot\HttpClients\GuzzleHttpClient;
 
 class Mocker
 {
-    /**
-     * Create a mocked API object with a container.
-     *
-     * @param bool $withContainer Should the mocked object have a mocked
-     *                            container added to it?
-     *
-     * @return \Prophecy\Prophecy\ObjectProphecy
-     */
-    public static function createApi($withContainer = false)
-    {
-        if ($withContainer) {
-            $container = Mocker::createContainer();
-            $container->make(Argument::any())->willReturn(new \stdClass());
-        } else {
-            $container = null;
-        }
-
-        $api = (new Prophet())->prophesize(Api::class);
-        $api->hasContainer()->willReturn($withContainer);
-        $api->getContainer()->willReturn($container);
-
-        return $api;
-    }
-
-    /**
-     * Create an IOC container that can be added to the API
-     *
-     * @return \Prophecy\Prophecy\ObjectProphecy
-     */
-    public static function createContainer()
-    {
-        return (new Prophet())->prophesize(Container::class);
-    }
-
-    /**
-     * Create a mocked Update Object
-     *
-     * @return \Prophecy\Prophecy\ObjectProphecy
-     */
-    public static function createUpdateObject()
-    {
-        return (new Prophet())->prophesize(Update::class);
-    }
-
-    /**
-     * This creates a full Update Response object with all the current fields set to blank.
-     * Every field may be overwritten/customised with $messageParams array.
-     *
-     * @param array  $updateFields
-     * @param string $updateId
-     *
-     * @return Api
-     */
-    public static function createUpdateResponse(array $updateFields = [], $updateId = '1')
-    {
-        $defaultResponseFields = [
-            'message_id' => '',
-            'from'       => [
-                'id'         => '',
-                'first_name' => '',
-                'last_name'  => '',
-                'username'   => '',
-            ],
-            'date'       => '',
-            'chat'       => [
-                'id'         => '',
-                'type'       => '',
-                'title'      => '',
-                'username'   => '',
-                'first_name' => '',
-                'last_name'  => '',
-            ],
-        ];
-
-        $response = [
-            'result' => [
-                [
-                    'update_id' => $updateId,
-                    'message'   => array_merge($defaultResponseFields, $updateFields),
-                ],
-            ],
-        ];
-
-        return self::setTelegramResponse($response);
-    }
-
-    /**
-     * A shortcut to create an Update Response object with a message.
-     * This makes writing tests that require a message Response a
-     * little bit easier.
-     *
-     * @param $message
-     *
-     * @return Api
-     */
-    public static function createMessageResponse($message)
-    {
-        return self::createUpdateResponse(['text' => $message]);
-    }
-
-
     /**
      * This creates a raw api response to simulate what Telegram replies
      * with.

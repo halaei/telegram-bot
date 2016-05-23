@@ -2,7 +2,6 @@
 
 namespace Telegram\Bot;
 
-use Illuminate\Contracts\Container\Container;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\HttpClients\HttpClientInterface;
@@ -48,11 +47,6 @@ class Api
      * @var bool Indicates if the request to Telegram will be asynchronous (non-blocking).
      */
     protected $isAsyncRequest = false;
-
-    /**
-     * @var Container IoC Container
-     */
-    protected static $container = null;
 
     /**
      * Timeout of the request in seconds.
@@ -1289,38 +1283,6 @@ class Api
         $response = $this->post($method, $arguments[0]);
 
         return new UnknownObject($response->getDecodedBody());
-    }
-
-    /**
-     * Set the IoC Container.
-     *
-     * @param $container Container instance
-     *
-     * @return void
-     */
-    public static function setContainer(Container $container)
-    {
-        self::$container = $container;
-    }
-
-    /**
-     * Get the IoC Container.
-     *
-     * @return Container
-     */
-    public function getContainer()
-    {
-        return self::$container;
-    }
-
-    /**
-     * Check if IoC Container has been set.
-     *
-     * @return boolean
-     */
-    public function hasContainer()
-    {
-        return self::$container !== null;
     }
 
     /**
