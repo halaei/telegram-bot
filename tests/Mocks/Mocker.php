@@ -2,6 +2,7 @@
 
 namespace Telegram\Bot\Tests\Mocks;
 
+use Illuminate\Contracts\Container\Container;
 use Telegram\Bot\Api;
 use Prophecy\Prophet;
 use Prophecy\Argument;
@@ -45,7 +46,7 @@ class Mocker
      */
     public static function createContainer()
     {
-        return (new Prophet())->prophesize(\Illuminate\Contracts\Container\Container::class);
+        return (new Prophet())->prophesize(Container::class);
     }
 
     /**
@@ -56,23 +57,6 @@ class Mocker
     public static function createUpdateObject()
     {
         return (new Prophet())->prophesize(Update::class);
-    }
-
-    /**
-     * Creates a stub command that responds to getName() and make() method calls.
-     *
-     * @param string $name
-     *
-     * @return \Prophecy\Prophecy\ObjectProphecy
-     */
-    public static function createMockCommand($name = 'start')
-    {
-        $command = (new Prophet())->prophesize(MockCommand::class);
-        $command->getAliases()->willReturn(null);
-        $command->getName()->willReturn($name);
-        $command->make(Argument::any(), Argument::any(), Argument::any())->willReturn(null);
-
-        return $command;
     }
 
     /**
