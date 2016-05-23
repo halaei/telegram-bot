@@ -1066,65 +1066,6 @@ class Api
     }
 
     /**
-     * Determine if a given type is the message.
-     *
-     * @deprecated Call method isType directly on Message object
-     *             To be removed in next major version.
-     *
-     * @param string         $type
-     * @param Update|Message $object
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return bool
-     */
-    public function isMessageType($type, $object)
-    {
-        if ($object === null) {
-            return null;
-        }
-        
-        if ($object instanceof Update) {
-            if ($object->has('message')) {
-                $object = $object->getMessage();
-            }else{
-                throw new \InvalidArgumentException('The object must be or contain a message');
-            }
-        }
-        
-        return $object->isType($type);
-    }
-
-    /**
-     * Detect Message Type Based on Update or Message Object.
-     *
-     * @deprecated Call method detectType directly on Message object
-     *             To be removed in next major version.
-     *
-     * @param Update|Message $object
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return string|null
-     */
-    public function detectMessageType($object)
-    {
-        if ($object === null) {
-            return null;
-        }
-        
-        if ($object instanceof Update) {
-            if ($object->has('message')) {
-                $object = $object->getMessage();
-            } else {
-                throw new \InvalidArgumentException('The object must be or contain a message');
-            }
-        }
-
-        return $object->detectType();
-    }
-
-    /**
      * Sends a GET request to Telegram Bot API and returns the result.
      *
      * @param string $endpoint
