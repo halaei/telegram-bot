@@ -7,7 +7,6 @@ namespace Telegram\Bot\Objects;
  *
  *
  * @method User      getUser()        Information about the user.
- * @method string    getStatus()      The member's status in the chat. Can be "creator", "administrator", "member", "left" or "kicked".
  */
 class ChatMember extends BaseObject
 {
@@ -21,5 +20,15 @@ class ChatMember extends BaseObject
         return [
             'user' => User::class,
         ];
+    }
+
+    /**
+     * The member's status in the chat. Can be "creator", "administrator", "member", "left" or "kicked".
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this['status'];
     }
 }
