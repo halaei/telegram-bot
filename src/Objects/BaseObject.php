@@ -67,7 +67,7 @@ abstract class BaseObject extends Collection
                     foreach ($data as $item) {
                         $array[] = new $class($item);
                     }
-                    $results[$key] = $array;
+                    $results[$key] = new Collection($array);
                 } else {
                     $results[$key] = new $class($data);
                 }
