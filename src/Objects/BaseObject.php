@@ -60,14 +60,16 @@ abstract class BaseObject extends Collection
 
         $results = $this->all();
         foreach ($results as $key => $data) {
-            foreach ($relations as $property => $class) {
-                if (!is_object($data) && isset($results[$key][$property])) {
-                    $results[$key][$property] = new $class($results[$key][$property]);
-                    continue;
-                }
-
-                if ($key === $property) {
-                    $results[$key] = new $class($results[$key]);
+            if (array_key_exists($key, $relations)) {
+                $class = $relations[$key];
+                if (is_array($data) && array_keys($data) === range(0, count($data) - 1)) {
+                    $array = [];
+                    foreach ($data as $item) {
+                        $array[] = new $class($item);
+                    }
+                    $results[$key] = $array;
+                } else {
+                    $results[$key] = new $class($data);
                 }
             }
         }
