@@ -125,12 +125,6 @@ abstract class BaseObject extends Collection
             $property = snake_case(substr($name, 3));
             $response = $this->get($property);
 
-            // Map relative property to an object
-            $relations = $this->relations();
-            if (null != $response && isset($relations[$property])) {
-                return new $relations[$property]($response);
-            }
-
             return $response;
         }
 
