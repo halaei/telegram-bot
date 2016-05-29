@@ -39,7 +39,7 @@ abstract class BaseObject extends Collection
     public function get($key, $default = null)
     {
         if ($this->offsetExists($key)) {
-            return is_array($this->items[$key]) ? new static($this->items[$key]) : $this->items[$key];
+            return $this->items[$key];
         }
 
         return value($default);
