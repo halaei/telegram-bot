@@ -62,19 +62,24 @@ abstract class BaseObject extends Collection
         foreach ($results as $key => $data) {
             if (array_key_exists($key, $relations)) {
                 $class = $relations[$key];
-                if (is_array($data) && array_keys($data) === range(0, count($data) - 1)) {
-                    $array = [];
-                    foreach ($data as $item) {
-                        $array[] = new $class($item);
-                    }
-                    $results[$key] = new Collection($array);
-                } else {
-                    $results[$key] = new $class($data);
-                }
+                $results[$key] = $this->recursiveMapRelatives($class, $data);
             }
         }
 
         return $this->items = $results;
+    }
+
+    protected function recursiveMapRelatives($class, $data)
+    {
+        if (is_array($data) && array_keys($data) === range(0, count($data) - 1)) {
+            $array = [];
+            foreach ($data as $item) {
+                $array[] = $this->recursiveMapRelatives($class, $item);
+            }
+            return new Collection($array);
+        } else {
+            return new $class($data);
+        }
     }
 
     /**
