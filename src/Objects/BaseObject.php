@@ -29,23 +29,6 @@ abstract class BaseObject extends Collection
     abstract public function relations();
 
     /**
-     * Get an item from the collection by key.
-     *
-     * @param mixed $key
-     * @param mixed $default
-     *
-     * @return mixed|static
-     */
-    public function get($key, $default = null)
-    {
-        if ($this->offsetExists($key)) {
-            return $this->items[$key];
-        }
-
-        return value($default);
-    }
-
-    /**
      * Map property relatives to appropriate objects.
      *
      * @return array|void
