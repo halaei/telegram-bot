@@ -43,7 +43,7 @@ abstract class BaseObject extends Collection
 
         $results = $this->all();
         foreach ($results as $key => $data) {
-            if (array_key_exists($key, $relations)) {
+            if (is_array($data) && array_key_exists($key, $relations)) {
                 $class = $relations[$key];
                 $results[$key] = $this->recursiveMapRelatives($class, $data);
             }

@@ -111,8 +111,19 @@ class Message extends BaseObject
 
         return $this->detectType() === $type;
     }
-    
-    
+
+    /**
+     * Get the text of a given message entity.
+     *
+     * @param MessageEntity $entity
+     * @return string
+     */
+    public function getEntityText($entity)
+    {
+        $text = $this->getText();
+        return substr($text, $entity->getOffset(), $entity->getLength());
+    }
+
     /**
      * Detect type based on properties.
      *
