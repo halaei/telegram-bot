@@ -4,6 +4,7 @@ namespace Telegram\Bot\Tests;
 
 use Telegram\Bot\Api;
 use InvalidArgumentException;
+use Telegram\Bot\Objects\ChatMember;
 use Telegram\Bot\Objects\File;
 use Telegram\Bot\Objects\User;
 use Telegram\Bot\TelegramClient;
@@ -386,6 +387,60 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(TelegramResponse::class, $response);
         $this->assertTrue($response->getDecodedBody()['result'][0]);
         $this->assertEquals(200, $response->getHttpStatusCode());
+    }
+
+    /**
+     * @test
+     * @expectedException \Telegram\Bot\Exceptions\TelegramMalformedResponseException
+     */
+    public function it_throws_malformed_response_exception_when_result_is_not_set()
+    {
+        $api = Mocker::setTelegramResponse(['ok' => true, 'description' => '']);
+        $api->getChatMembersCount(['chat_id' => '@name']);
+    }
+
+    /** @test */
+    public function it_returns_int_as_chat_members_count()
+    {
+        $api = Mocker::createApiResponse(10, true);
+        $this->assertEquals(10, $api->getChatMembersCount(['chat_id' => '@name']));
+    }
+
+    /**
+     * @test
+     * @expectedException \Telegram\Bot\Exceptions\TelegramMalformedResponseException
+     */
+    public function it_throws_malformed_response_exception_again_when_result_is_not_set()
+    {
+        $api = Mocker::setTelegramResponse(['ok' => true, 'description' => '']);
+        $api->getChatAdministrators(['chat_id' => '@name']);
+    }
+
+    /** @test */
+    public function it_returns_array_of_chat_members_as_admins()
+    {
+        $api = Mocker::createApiResponse([
+            [
+                'user' => [
+                    'id' => 1000,
+                    'first_name' => 'foo',
+                ],
+                'status' => 'creator',
+            ],
+            [
+                'user' => [
+                    'id' => 2000,
+                    'first_name' => 'bar',
+                ],
+                'status' => 'administrator',
+            ],
+        ], true);
+        $admins = $api->getChatAdministrators(['chat_id' => '@name']);
+        $this->assertCount(2, $admins);
+        $this->assertInstanceOf(ChatMember::class, $admins[0]);
+        $this->assertEquals('creator', $admins[0]->getStatus());
+        $this->assertInstanceOf(ChatMember::class, $admins[1]);
+        $this->assertEquals('administrator', $admins[1]->getStatus());
     }
 
     /**

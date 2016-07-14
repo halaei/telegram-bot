@@ -2,6 +2,7 @@
 
 namespace Telegram\Bot;
 
+use Telegram\Bot\Exceptions\TelegramMalformedResponseException;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\HttpClients\HttpClientInterface;
@@ -893,14 +894,21 @@ class Api
     /**
      * @param array $params
      * @return ChatMember[]
+     * @throws TelegramMalformedResponseException
      */
     public function getChatAdministrators(array $params)
     {
-        $response = $this->post('getChatAdministrators', $params)->getDecodedBody()['result'];
+        $response = $this->post('getChatAdministrators', $params);
+        $body = $response->getDecodedBody();
+        if (! isset($body['result'])) {
+            throw new TelegramMalformedResponseException($response, 'Undefined index result in decoded body');
+        }
+
+        $result = $body['result'];
 
         $members = [];
 
-        foreach ($response as $member) {
+        foreach ($result as $member) {
             $members[] = new ChatMember($member);
         }
 
@@ -910,11 +918,16 @@ class Api
     /**
      * @param array $params
      * @return int
+     * @throws TelegramMalformedResponseException
      */
     public function getChatMembersCount(array $params)
     {
-        $result = $this->post('getChatMembersCount', $params);
-        return $result->getDecodedBody()['result'];
+        $response = $this->post('getChatMembersCount', $params);
+        $body = $response->getDecodedBody();
+        if (! isset($body['result'])) {
+            throw new TelegramMalformedResponseException($response, 'Undefined index result in decoded body');
+        }
+        return $body['result'];
     }
 
     /**
