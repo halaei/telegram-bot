@@ -97,7 +97,7 @@ class Message extends BaseObject
     }
     
     /**
-     * Determine if the message is of given type
+     * Determine if the message is of given type.
      *
      * @param string         $type
      *
@@ -122,6 +122,54 @@ class Message extends BaseObject
     {
         $text = $this->getText();
         return substr($text, $entity->getOffset(), $entity->getLength());
+    }
+
+    /**
+     * Determine if the text message has any HTML entity.
+     *
+     * @return bool
+     */
+    public function hasHtmlEntity()
+    {
+        foreach ($this->getEntities() ?: [] as $entity) {
+            if ($entity->isHtmlEntity()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return the HTML code of the text.
+     *
+     * @return string
+     */
+    public function getHtml()
+    {
+        $text = $this->getText();
+        $html = '';
+        $lastOffset = 0;
+        foreach ($this->getEntities() ?: [] as $entity) {
+            $html .= e(mb_substr($text, $lastOffset, $entity->getOffset() - $lastOffset));
+            $lastOffset = $entity->getOffset() + $entity->getLength();
+            if ($entity->getType() === 'bold') {
+                $html .= '<b>'.e($this->getEntityText($entity)).'</b>';
+            } elseif ($entity->getType() === 'italic') {
+                $html .= '<i>'.e($this->getEntityText($entity)).'</i>';
+            } elseif ($entity->getType() === 'code') {
+                $html .= '<code>'.e($this->getEntityText($entity)).'</code>';
+            } elseif ($entity->getType() === 'pre') {
+                $html .= '<pre>'.e($this->getEntityText($entity)).'</pre>';
+            } elseif ($entity->getType() === 'text_link') {
+                $url = $entity->getUrl();
+                $html .= "<a href=\"$url\">".e($this->getEntityText($entity)).'</a>';
+            } else {
+                $html .= e($this->getEntityText($entity));
+            }
+        }
+
+        $html .= e(mb_substr($text, $lastOffset));
+        return $html;
     }
 
     /**

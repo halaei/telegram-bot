@@ -21,4 +21,12 @@ class MessageEntity extends BaseObject
     {
         return [];
     }
+
+    public function isHtmlEntity()
+    {
+        if (in_array($this->getType(), ['bold', 'italic', 'code', 'pre', 'text_link'])) {
+            return true;
+        }
+        return false;
+    }
 }
