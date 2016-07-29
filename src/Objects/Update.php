@@ -32,16 +32,6 @@ class Update extends BaseObject
     }
 
     /**
-     * Get recent message.
-     *
-     * @return Update
-     */
-    public function recentMessage()
-    {
-        return new static($this->last());
-    }
-    
-    /**
      * Determine if the update is of given type
      *
      * @param string         $type
@@ -66,6 +56,7 @@ class Update extends BaseObject
     {
         $types = [
             'message',
+            'edited_message',
             'inline_query',
             'chosen_inline_result',
             'callback_query',
