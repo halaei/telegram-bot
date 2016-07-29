@@ -66,4 +66,55 @@ class Update extends BaseObject
             ->intersect($types)
             ->pop();
     }
+
+    /**
+     * Return the related message if the update is created in a private chat.
+     *
+     * @return null|Message
+     */
+    public function getMessage()
+    {
+        if ($this->has('message')) {
+            return $this->getMessage();
+        } elseif ($this->has('edited_message')) {
+            return $this->getEditedMessage();
+        } elseif ($this->has('callback_query')) {
+            return $this->getCallbackQuery()->getMessage();
+        }
+        return null;
+    }
+
+    /**
+     * Return the related chat if the update is created in a private chat.
+     *
+     * @return null|Chat
+     */
+    public function getChat()
+    {
+        if ($message = $this->getMessage()) {
+            return $message->getChat();
+        }
+        return null;
+    }
+
+    /**
+     * Return the related user that created the update.
+     *
+     * @return null|User
+     */
+    public function getFrom()
+    {
+        if ($this->has('message')) {
+            return $this->getMessage()->getFrom();
+        } elseif ($this->has('edited_message')) {
+            return $this->getEditedMessage()->getFrom();
+        } elseif ($this->has('inline_query')) {
+            return $this->getInlineQuery()->getFrom();
+        } elseif ($this->has('chosen_inline_result')) {
+            return $this->getChosenInlineResult()->getFrom();
+        } elseif ($this->has('callback_query')) {
+            return $this->getCallbackQuery()->getFrom();
+        }
+        return null;
+    }
 }
