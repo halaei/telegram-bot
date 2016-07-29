@@ -91,7 +91,7 @@ class Update extends BaseObject
      */
     public function getChat()
     {
-        if ($message = $this->getMessage()) {
+        if ($message = $this->getPrivateMessage()) {
             return $message->getChat();
         }
         return null;
