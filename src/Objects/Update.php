@@ -72,7 +72,7 @@ class Update extends BaseObject
      *
      * @return null|Message
      */
-    public function getMessage()
+    public function getPrivateMessage()
     {
         if ($this->has('message')) {
             return $this->getMessage();
