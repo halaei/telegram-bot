@@ -274,7 +274,7 @@ class Api
      */
     public function sendPhoto(array $params)
     {
-        return $this->uploadFile('sendPhoto', $params);
+        return $this->uploadFile('sendPhoto', $params, ['photo']);
     }
 
     /**
@@ -310,7 +310,7 @@ class Api
      */
     public function sendAudio(array $params)
     {
-        return $this->uploadFile('sendAudio', $params);
+        return $this->uploadFile('sendAudio', $params, ['audio']);
     }
 
     /**
@@ -342,7 +342,7 @@ class Api
      */
     public function sendDocument(array $params)
     {
-        return $this->uploadFile('sendDocument', $params);
+        return $this->uploadFile('sendDocument', $params, ['document']);
     }
 
     /**
@@ -378,7 +378,7 @@ class Api
             throw new TelegramSDKException('Invalid Sticker Provided. Supported Format: Webp');
         }
 
-        return $this->uploadFile('sendSticker', $params);
+        return $this->uploadFile('sendSticker', $params, ['sticker']);
     }
 
     /**
@@ -417,7 +417,7 @@ class Api
      */
     public function sendVideo(array $params)
     {
-        return $this->uploadFile('sendVideo', $params);
+        return $this->uploadFile('sendVideo', $params, ['video']);
     }
 
     /**
@@ -449,7 +449,7 @@ class Api
      */
     public function sendVoice(array $params)
     {
-        return $this->uploadFile('sendVoice', $params);
+        return $this->uploadFile('sendVoice', $params, ['voice']);
     }
 
     /**
@@ -973,7 +973,7 @@ class Api
             throw new TelegramSDKException('Invalid URL, should be a HTTPS url.');
         }
 
-        return $this->uploadFile('setWebhook', $params);
+        return $this->uploadFile('setWebhook', $params, ['certificate']);
     }
 
     /**
@@ -1187,23 +1187,27 @@ class Api
      *
      * @param string $endpoint
      * @param array  $params
+     * @param array  $files
      *
      * @throws TelegramSDKException
      *
      * @return Message
      */
-    protected function uploadFile($endpoint, array $params = [])
+    protected function uploadFile($endpoint, array $params, array $files)
     {
+        foreach ($files as $key) {
+            if (array_key_exists($key, $params) && !is_resource($params[$key])) {
+                $validUrl = filter_var($params[$key], FILTER_VALIDATE_URL);
+                $params[$key] = (is_file($params[$key]) || $validUrl) ? (new InputFile($params[$key]))->open() : (string) $params[$key];
+            }
+        }
+
         $i = 0;
         $multipart_params = [];
+
         foreach ($params as $name => $contents) {
             if (is_null($contents)) {
                 continue;
-            }
-
-            if (!is_resource($contents) && $name !== 'url') {
-                $validUrl = filter_var($contents, FILTER_VALIDATE_URL);
-                $contents = (is_file($contents) || $validUrl) ? (new InputFile($contents))->open() : (string)$contents;
             }
 
             $multipart_params[$i]['name'] = $name;
