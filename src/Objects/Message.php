@@ -121,7 +121,7 @@ class Message extends BaseObject
     public function getEntityText($entity)
     {
         $text = $this->getText();
-        return substr($text, $entity->getOffset(), $entity->getLength());
+        return mb_substr($text, $entity->getOffset(), $entity->getLength());
     }
 
     /**
