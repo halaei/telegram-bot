@@ -95,7 +95,7 @@ class Message extends BaseObject
     {
         return $this->get('caption');
     }
-    
+
     /**
      * Determine if the message is of given type.
      *
@@ -120,8 +120,35 @@ class Message extends BaseObject
      */
     public function getEntityText($entity)
     {
-        $text = $this->getText();
-        return mb_substr($text, $entity->getOffset(), $entity->getLength());
+        return $this->substr($this->getText(), $entity->getOffset(), $entity->getLength());
+    }
+
+    /**
+     * Substring based on UTF-16 code units.
+     *
+     * @param string $text
+     * @param string $start
+     * @param int $length
+     *
+     * @return string
+     */
+    protected function substr($text, $start, $length)
+    {
+        $array = preg_split("//u", $text, -1, PREG_SPLIT_NO_EMPTY);
+        $result = '';
+        $curOffset = 0;
+        $curLen = 0;
+        foreach ($array as $char) {
+            if ($curOffset >= $start && $curLen < $length) {
+                $result .= $char;
+                $curLen += strlen($char) > 2 ? 2 : 1;
+            }
+            $curOffset += strlen($char) > 2 ? 2 : 1;
+            if ($curLen >= $length) {
+                break;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -150,7 +177,7 @@ class Message extends BaseObject
         $html = '';
         $lastOffset = 0;
         foreach ($this->getEntities() ?: [] as $entity) {
-            $html .= e(mb_substr($text, $lastOffset, $entity->getOffset() - $lastOffset));
+            $html .= e($this->substr($text, $lastOffset, $entity->getOffset() - $lastOffset));
             $lastOffset = $entity->getOffset() + $entity->getLength();
             if ($entity->getType() === 'bold') {
                 $html .= '<b>'.e($this->getEntityText($entity)).'</b>';
@@ -168,7 +195,7 @@ class Message extends BaseObject
             }
         }
 
-        $html .= e(mb_substr($text, $lastOffset));
+        $html .= e($this->substr($text, $lastOffset, mb_strlen($text)));
         return $html;
     }
 
