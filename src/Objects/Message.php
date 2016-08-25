@@ -121,7 +121,7 @@ class Message extends BaseObject
     public function getEntityText($entity)
     {
         $text = $this->getText();
-        return mb_substr($text, $entity->getOffset(), $entity->getLength());
+        return mb_substr($text, $entity->getOffset(), $entity->getLength(), 'UTF-16');
     }
 
     /**
@@ -150,7 +150,7 @@ class Message extends BaseObject
         $html = '';
         $lastOffset = 0;
         foreach ($this->getEntities() ?: [] as $entity) {
-            $html .= e(mb_substr($text, $lastOffset, $entity->getOffset() - $lastOffset));
+            $html .= e(mb_substr($text, $lastOffset, $entity->getOffset() - $lastOffset, 'UTF-16'));
             $lastOffset = $entity->getOffset() + $entity->getLength();
             if ($entity->getType() === 'bold') {
                 $html .= '<b>'.e($this->getEntityText($entity)).'</b>';
@@ -168,7 +168,7 @@ class Message extends BaseObject
             }
         }
 
-        $html .= e(mb_substr($text, $lastOffset));
+        $html .= e(mb_substr($text, $lastOffset, null, 'UTF-16'));
         return $html;
     }
 
