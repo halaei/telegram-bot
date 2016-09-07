@@ -46,7 +46,7 @@ class Update extends BaseObject
     
         return $this->detectType() === $type;
     }
-    
+
     /**
      * Detect type based on properties.
      *
@@ -68,11 +68,23 @@ class Update extends BaseObject
     }
 
     /**
-     * Return the related message if the update is created in a private chat.
+     * Return the related message.
+     *
+     * @deprecated
      *
      * @return null|Message
      */
     public function getPrivateMessage()
+    {
+        return $this->getRelatedMessage();
+    }
+
+    /**
+     * Return the related message.
+     *
+     * @return null|Message
+     */
+    public function getRelatedMessage()
     {
         if ($this->has('message')) {
             return $this->getMessage();
@@ -85,13 +97,13 @@ class Update extends BaseObject
     }
 
     /**
-     * Return the related chat if the update is created in a private chat.
+     * Return the related chat if any.
      *
      * @return null|Chat
      */
     public function getChat()
     {
-        if ($message = $this->getPrivateMessage()) {
+        if ($message = $this->getRelatedMessage()) {
             return $message->getChat();
         }
         return null;
