@@ -2,6 +2,8 @@
 
 namespace Telegram\Bot\Objects;
 
+use Illuminate\Support\Collection;
+
 /**
  * Class Message.
  *
@@ -197,6 +199,30 @@ class Message extends BaseObject
 
         $html .= e($this->substr($text, $lastOffset, mb_strlen($text)));
         return $html;
+    }
+
+    /**
+     * Return the file id of the message (if any)
+     *
+     * @return string|null
+     */
+    public function getFileId()
+    {
+        if ($this->getAudio()) {
+            return $this->getAudio()->getFileId();
+        } elseif ($this->getDocument()) {
+            return $this->getDocument()->getFileId();
+        } elseif ($this->getNewChatPhoto()) {
+            return $this->getNewChatPhoto()->last()->getFileId();
+        } elseif ($this->getPhoto()) {
+            return $this->getPhoto()->last()->getFileId();
+        } elseif ($this->getSticker()) {
+            return $this->getSticker()->getFileId();
+        } elseif ($this->getVideo()) {
+            return $this->getVideo()->getFileId();
+        } elseif ($this->getVoice()) {
+            return $this->getVoice()->getFileId();
+        }
     }
 
     /**
