@@ -2,8 +2,6 @@
 
 namespace Telegram\Bot\Objects;
 
-use Illuminate\Support\Collection;
-
 /**
  * Class Message.
  *
@@ -19,6 +17,7 @@ use Illuminate\Support\Collection;
  * @method MessageEntity[]  getEntities()               (Optional). For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text.
  * @method Audio            getAudio()                  (Optional). Message is an audio file, information about the file.
  * @method Document         getDocument()               (Optional). Message is a general file, information about the file.
+ * @method Game             getGame()                   (Optional). Message is a game, information about the game.
  * @method PhotoSize[]      getPhoto()                  (Optional). Message is a photo, available sizes of the photo.
  * @method Sticker          getSticker()                (Optional). Message is a sticker, information about the sticker.
  * @method Video            getVideo()                  (Optional). Message is a video, information about the video.
@@ -54,6 +53,7 @@ class Message extends BaseObject
             'entities'         => MessageEntity::class,
             'audio'            => Audio::class,
             'document'         => Document::class,
+            'game'             => Game::class,
             'photo'            => PhotoSize::class,
             'sticker'          => Sticker::class,
             'video'            => Video::class,

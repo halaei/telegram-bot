@@ -11,6 +11,7 @@ use Telegram\Bot\HttpClients\HttpClientInterface;
 use Telegram\Bot\Objects\Chat;
 use Telegram\Bot\Objects\ChatMember;
 use Telegram\Bot\Objects\File;
+use Telegram\Bot\Objects\GameHighScore;
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\UnknownObject;
 use Telegram\Bot\Objects\Update;
@@ -452,6 +453,113 @@ class Api
     public function sendVoice(array $params)
     {
         return $this->uploadFile('sendVoice', $params, ['voice']);
+    }
+
+    /**
+     * Send game.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'              => '',
+     *   'game_short_name'      => '',
+     *   'disable_notification' => '',
+     *   'reply_to_message_id'  => '',
+     *   'reply_markup'         => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#sendgame
+     *
+     * @param array $params
+     *
+     * @return Message
+     */
+    public function sendGame(array $params)
+    {
+        $response = $this->post('sendGame', $params);
+
+        return new Message($response->getDecodedBody());
+    }
+
+    /**
+     * Use this method to set the score of the specified user in a game.
+     * On success, if the message was sent by the bot, returns the edited Message, otherwise returns True.
+     * Returns an error, if the new score is not greater than the user's current score in the chat.
+     *
+     * <code>
+     * $params = [
+     *   'user_id'           => '',
+     *   'score'             => '',
+     *   'chat_id'           => '',
+     *   'message_id'        => '',
+     *   'inline_message_id' => '',
+     *   'edit_message'      => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#setgamescore
+     *
+     * @param array $params
+     *
+     * @throws TelegramMalformedResponseException
+     *
+     * @return Message|true
+     */
+    public function setGameScore(array $params)
+    {
+        $response = $this->post('setGameScore', $params);
+
+        $body = $response->getDecodedBody();
+
+        if (! isset($body['result'])) {
+            throw new TelegramMalformedResponseException($response, 'Undefined index result in decoded body');
+        }
+
+        if ($body['result'] === true) {
+            return true;
+        }
+
+        return new Message($body);
+    }
+
+    /**
+     * Use this method to get data for high score tables.
+     * Will return the score of the specified user and several of his neighbors in a game.
+     *
+     * <code>
+     * $params = [
+     *   'user_id'           => '',
+     *   'chat_id'           => '',
+     *   'message_id'        => '',
+     *   'inline_message_id' => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#getgamehighscores
+     *
+     * @param array $params
+     *
+     * @throws TelegramMalformedResponseException
+     *
+     * @return GameHighScore[]
+     */
+    public function getGameHighScores(array $params)
+    {
+        $response = $this->post('getGameHighScores', $params);
+
+        $body = $response->getDecodedBody();
+
+        if (! isset($body['result'])) {
+            throw new TelegramMalformedResponseException($response, 'Undefined index result in decoded body');
+        }
+
+        $scores = [];
+
+        foreach ($body['result'] as $score) {
+            $scores[] = new GameHighScore($score);
+        }
+
+        return $scores;
     }
 
     /**
