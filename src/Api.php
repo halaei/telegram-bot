@@ -2,6 +2,7 @@
 
 namespace Telegram\Bot;
 
+use Illuminate\Support\Collection;
 use Psr\Http\Message\StreamInterface;
 use Telegram\Bot\Exceptions\TelegramMalformedResponseException;
 use Telegram\Bot\Exceptions\TelegramSDKException;
@@ -978,20 +979,28 @@ class Api
     }
 
     /**
-     * Returns webhook updates sent by Telegram.
+     * Returns the webhook update sent by Telegram.
      * Works only if you set a webhook.
      *
      * @see setWebhook
      *
      * @return Update
      */
-    public function getWebhookUpdates()
+    public function getWebhookUpdate()
     {
         $body = json_decode(file_get_contents('php://input'), true);
 
         $update = new Update($body);
 
         return $update;
+    }
+
+    /**
+     * @deprecated
+     */
+    public function getWebhookUpdates()
+    {
+        return $this->getWebhookUpdate();
     }
 
     /**
@@ -1024,7 +1033,7 @@ class Api
      * @var int|null $params ['limit']
      * @var int|null $params ['timeout']
      *
-     * @return Update[]
+     * @return Update[]|Collection
      */
     public function getUpdates(array $params = [])
     {
@@ -1041,9 +1050,8 @@ class Api
             }
         }
 
-        return $data;
+        return new Collection($data);
     }
-
 
     /**
      * Builds a custom keyboard markup.
