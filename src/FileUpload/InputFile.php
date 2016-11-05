@@ -3,53 +3,65 @@
 namespace Telegram\Bot\FileUpload;
 
 use GuzzleHttp\Psr7;
+use Psr\Http\Message\StreamInterface;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 
 /**
  * Class InputFile.
  */
-class InputFile
+class InputFile implements InputFileInterface
 {
     /**
-     * @var string The path to the file on the system.
+     * @var string|resource The path to the file on the system, or the readable resource.
      */
     protected $path;
 
     /**
-     * @var resource The stream pointing to the file.
+     * @var null|string The uri of the resource.
+     * If set, Telegram will use this as the original file name.
      */
-    protected $stream;
+    private $uri;
 
     /**
      * Creates a new InputFile entity.
      *
-     * @param string $filePath
+     * @param string|resource $filePath
+     * @param string|null $uri
      *
      * @throws TelegramSDKException
      */
-    public function __construct($filePath)
+    public function __construct($filePath, $uri = null)
     {
         $this->path = $filePath;
+        $this->uri = $uri;
     }
 
     /**
-     * Return the name of the file.
+     * Opens file stream as an StreamInterface.
      *
-     * @return string
+     * @throws TelegramSDKException
+     *
+     * @return StreamInterface
      */
-    public function getFileName()
+    public function open()
     {
-        return basename($this->path);
+        $resource = $this->getResource();
+        $options = [];
+        if (! is_null($this->uri)) {
+            $options = ['metadata' => ['uri' => $this->uri]];
+        }
+
+        return new Psr7\Stream($resource, $options);
     }
 
     /**
-     * Opens file stream.
+     * Opens file stream as a resource.
      *
      * @throws TelegramSDKException
      *
      * @return resource
      */
-    public function open()
+    protected function getResource()
     {
         if (is_resource($this->path)) {
             return $this->path;

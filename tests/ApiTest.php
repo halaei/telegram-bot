@@ -4,6 +4,7 @@ namespace Telegram\Bot\Tests;
 
 use Telegram\Bot\Api;
 use InvalidArgumentException;
+use Telegram\Bot\FileUpload\HttpUrl;
 use Telegram\Bot\Objects\ChatMember;
 use Telegram\Bot\Objects\File;
 use Telegram\Bot\Objects\User;
@@ -196,7 +197,6 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($forwardFromId, $response->getForwardFrom()->getId());
     }
 
-
     /** @test */
     public function it_checks_a_message_object_is_returned_with_photo_information_when_sendPhoto_is_sent()
     {
@@ -227,6 +227,39 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Message::class, $response);
         $this->assertTrue($response->has('photo'));
         $this->assertTrue($response->getPhoto()->contains('file_id', $photo));
+        $this->assertGreaterThan(1, count($response->getPhoto()));
+    }
+
+    /** @test */
+    public function it_handles_http_url_as_file()
+    {
+        $chatId = 987654321;
+        $photo = new HttpUrl('http://foo.com/img/123.jpg');
+        $this->api = Mocker::createApiResponse(
+            [
+                'chat'  => [
+                    'id' => $chatId,
+                ],
+                'photo' => [
+                    [
+                        'file_id' => md5('file_id1'),
+                    ],
+                    [
+                        'file_id' => md5('file_id2'),
+                    ],
+                    [
+                        'file_id' => md5('file_id3'),
+                    ],
+                ],
+            ]
+        );
+
+        /** @var Message $response */
+        $response = $this->api->sendPhoto(['chat_id' => $chatId, 'photo' => $photo]);
+
+        $this->assertInstanceOf(Message::class, $response);
+        $this->assertTrue($response->has('photo'));
+        $this->assertTrue($response->getPhoto()->contains('file_id', md5('file_id1')));
         $this->assertGreaterThan(1, count($response->getPhoto()));
     }
 

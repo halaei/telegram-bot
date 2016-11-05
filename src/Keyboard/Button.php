@@ -6,6 +6,8 @@ use Telegram\Bot\Objects\CallbackGame;
 /**
  * Class Button
  *
+ * @deprecated
+ *
  * @method $this setRequestContact($boolean)               Optional. If True, the user's phone number will be sent as a contact when the button is pressed. Available in private chats only.
  * @method $this setRequestLocation($boolean)              Optional. If True, the user's current location will be sent when the button is pressed. Available in private chats only.
  *

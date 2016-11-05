@@ -44,8 +44,6 @@ class Mocker
         $body = json_encode($body);
         $mock = new MockHandler([
             new Response(200, [], $body),
-//            new Response(200, [], $body),
-            // two times because Api::commandsHandler makes two requests (when not using webhook method).
         ]);
         $handler = HandlerStack::create($mock);
         $client = new GuzzleHttpClient(new Client(['handler' => $handler]));

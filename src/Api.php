@@ -6,7 +6,9 @@ use Illuminate\Support\Collection;
 use Psr\Http\Message\StreamInterface;
 use Telegram\Bot\Exceptions\TelegramMalformedResponseException;
 use Telegram\Bot\Exceptions\TelegramSDKException;
+use Telegram\Bot\FileUpload\HttpUrl;
 use Telegram\Bot\FileUpload\InputFile;
+use Telegram\Bot\FileUpload\InputFileInterface;
 use Telegram\Bot\HttpClients\HttpClientInterface;
 use Telegram\Bot\Objects\Chat;
 use Telegram\Bot\Objects\ChatMember;
@@ -1314,8 +1316,12 @@ class Api
     {
         foreach ($files as $key) {
             if (array_key_exists($key, $params) && !is_resource($params[$key]) && ! $params[$key] instanceof StreamInterface) {
-                $validUrl = filter_var($params[$key], FILTER_VALIDATE_URL);
-                $params[$key] = (is_file($params[$key]) || $validUrl) ? (new InputFile($params[$key]))->open() : (string) $params[$key];
+                if ($params[$key] instanceof InputFileInterface) {
+                    $params[$key] = $params[$key]->open();
+                } else {
+                    $validUrl = filter_var($params[$key], FILTER_VALIDATE_URL);
+                    $params[$key] = (is_file($params[$key]) || $validUrl) ? (new InputFile($params[$key]))->open() : (string) $params[$key];
+                }
             }
         }
 

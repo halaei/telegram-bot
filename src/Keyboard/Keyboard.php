@@ -3,6 +3,7 @@ namespace Telegram\Bot\Keyboard;
 
 /**
  * Class Keyboard
+ * @deprecated
  *
  * <code>
  * // For Standard Keyboard
