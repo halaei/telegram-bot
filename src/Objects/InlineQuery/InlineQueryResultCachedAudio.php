@@ -9,6 +9,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  * $params = [
  *   'id'                         => '',
  *   'audio_file_id'              => '',
+ *   'caption'                    => '',
  *   'reply_markup'               => '',
  *   'input_message_content'      => '',
  * ];

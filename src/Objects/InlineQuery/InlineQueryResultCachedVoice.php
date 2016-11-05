@@ -10,6 +10,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  *   'id'                         => '',
  *   'voice_file_id'              => '',
  *   'title'                      => '',
+ *   'caption'                    => '',
  *   'reply_markup'               => '',
  *   'input_message_content'      => '',
  * ];
