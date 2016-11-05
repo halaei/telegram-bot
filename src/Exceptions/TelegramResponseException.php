@@ -2,6 +2,7 @@
 
 namespace Telegram\Bot\Exceptions;
 
+use Telegram\Bot\Objects\ResponseParameters;
 use Telegram\Bot\TelegramResponse;
 
 /**
@@ -113,6 +114,14 @@ class TelegramResponseException extends TelegramSDKException
     public function getResponseData()
     {
         return $this->responseData;
+    }
+
+    /**
+     * @return ResponseParameters
+     */
+    public function getResponseParameters()
+    {
+        return new ResponseParameters($this->get('parameters', null));
     }
 
     /**

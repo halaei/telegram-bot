@@ -4,6 +4,7 @@ namespace Telegram\Bot\Tests;
 
 use Telegram\Bot\Api;
 use InvalidArgumentException;
+use Telegram\Bot\Exceptions\TelegramResponseException;
 use Telegram\Bot\FileUpload\HttpUrl;
 use Telegram\Bot\Objects\ChatMember;
 use Telegram\Bot\Objects\File;
@@ -493,6 +494,28 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(10, $info->getPendingUpdateCount());
         $this->assertEquals(100000, $info->getLastErrorDate());
         $this->assertEquals('foobar', $info->getLastErrorMessage());
+    }
+
+    public function test_response_parameters_on_telegram_response_exception()
+    {
+        $api = Mocker::setTelegramResponse([
+            'ok' => false,
+            'error_code' => 400,
+            'description' => 'Too Many Requests. Retry after 1000',
+            'parameters' => [
+                'retry_after' => 1000,
+            ],
+        ]);
+        $error = false;
+        try {
+            $api->sendMessage(['chat_id' => 1234, 'text' => 'text']);
+        } catch (TelegramResponseException $e) {
+            $this->assertEquals(400, $e->getCode());
+            $this->assertEquals('Too Many Requests. Retry after 1000', $e->getMessage());
+            $this->assertEquals(1000, $e->getResponseParameters()->getRetryAfter());
+            $error = true;
+        }
+        $this->assertTrue($error);
     }
 
     /**
