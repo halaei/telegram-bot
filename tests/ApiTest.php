@@ -8,6 +8,7 @@ use Telegram\Bot\FileUpload\HttpUrl;
 use Telegram\Bot\Objects\ChatMember;
 use Telegram\Bot\Objects\File;
 use Telegram\Bot\Objects\User;
+use Telegram\Bot\Objects\WebhookInfo;
 use Telegram\Bot\TelegramClient;
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\TelegramResponse;
@@ -474,6 +475,24 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('creator', $admins[0]->getStatus());
         $this->assertInstanceOf(ChatMember::class, $admins[1]);
         $this->assertEquals('administrator', $admins[1]->getStatus());
+    }
+
+    public function test_get_webhook_info()
+    {
+        $api = Mocker::createApiResponse([
+            'url'                    => 'https://foo.com/bar',
+            'has_custom_certificate' => false,
+            'pending_update_count'   => 10,
+            'last_error_date'        => 100000,
+            'last_error_message'     => 'foobar',
+        ]);
+        $info = $api->getWebhookInfo();
+        $this->assertInstanceOf(WebhookInfo::class, $info);
+        $this->assertEquals('https://foo.com/bar', $info->getUrl());
+        $this->assertFalse($info->getHasCustomCertificate());
+        $this->assertEquals(10, $info->getPendingUpdateCount());
+        $this->assertEquals(100000, $info->getLastErrorDate());
+        $this->assertEquals('foobar', $info->getLastErrorMessage());
     }
 
     /**

@@ -20,6 +20,7 @@ use Telegram\Bot\Objects\Update;
 use Telegram\Bot\Objects\User;
 use Telegram\Bot\Objects\UserProfilePhotos;
 use Telegram\Bot\Keyboard\Keyboard;
+use Telegram\Bot\Objects\WebhookInfo;
 
 /**
  * Class Api.
@@ -1051,6 +1052,19 @@ class Api
         $response = $this->post('getChatMember', $params);
 
         return new ChatMember($response->getDecodedBody());
+    }
+
+    /**
+     * Use this method to get current webhook status. Requires no parameters.
+     * On success, returns a WebhookInfo object. If the bot is using getUpdates, will return an object with the url field empty.
+     *
+     * @return WebhookInfo
+     */
+    public function getWebhookInfo()
+    {
+        $response = $this->post('getWebhookInfo');
+
+        return new WebhookInfo($response->getDecodedBody());
     }
 
     /**
