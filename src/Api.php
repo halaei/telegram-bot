@@ -308,6 +308,7 @@ class Api
      * @var int        $params ['duration']
      * @var string     $params ['performer']
      * @var string     $params ['title']
+     * @var string     $params ['caption']
      * @var bool       $params ['disable_notification']
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
@@ -446,6 +447,7 @@ class Api
      *
      * @var int|string $params ['chat_id']
      * @var string     $params ['voice']
+     * @var string     $params ['caption']
      * @var int        $params ['duration']
      * @var bool       $params ['disable_notification']
      * @var int        $params ['reply_to_message_id']

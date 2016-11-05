@@ -18,6 +18,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  *
  * @method $this setId($string)                     Unique identifier for this result, 1-64 bytes
  * @method $this setAudioFileId($string)            A valid file identifier for the audio file
+ * @method $this setCaption($string)                Optional. Caption, 0-200 characters
  * @method $this setReplyMarkup($object)            Optional. Inline keyboard attached to the message
  * @method $this setInputMessageContent($object)    Optional. Content of the message to be sent instead of the photo
  */
