@@ -493,12 +493,13 @@ class Api
      *
      * <code>
      * $params = [
-     *   'user_id'           => '',
-     *   'score'             => '',
-     *   'chat_id'           => '',
-     *   'message_id'        => '',
-     *   'inline_message_id' => '',
-     *   'edit_message'      => '',
+     *   'user_id'              => '',
+     *   'score'                => '',
+     *   'force'                => '',
+     *   'disable_edit_message' => '',
+     *   'chat_id'              => '',
+     *   'message_id'           => '',
+     *   'inline_message_id'    => '',
      * ];
      * </code>
      *
