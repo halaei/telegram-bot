@@ -1218,8 +1218,8 @@ class Api
      *
      * <code>
      * $params = [
-     *   'hide_keyboard' => true,
-     *   'selective'     => false,
+     *   'remove_keyboard' => true,
+     *   'selective'       => false,
      * ];
      * </code>
      *
@@ -1230,7 +1230,7 @@ class Api
      *
      * @param array $params
      *
-     * @var bool    $params ['hide_keyboard']
+     * @var bool    $params ['remove_keyboard']
      * @var bool    $params ['selective']
      *
      * @return string

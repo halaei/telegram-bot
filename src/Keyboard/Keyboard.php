@@ -151,8 +151,8 @@ class Keyboard extends Base
      *
      * <code>
      * $params = [
-     *   'hide_keyboard' => true,
-     *   'selective'     => false,
+     *   'remove_keyboard' => true,
+     *   'selective'       => false,
      * ];
      * </code>
      *
@@ -160,14 +160,14 @@ class Keyboard extends Base
      *
      * @param array $params
      *
-     * @var bool    $params ['hide_keyboard']
+     * @var bool    $params ['remove_keyboard']
      * @var bool    $params ['selective']
      *
      * @return string
      */
     public static function hide(array $params = [])
     {
-        return new static(array_merge(['hide_keyboard' => true, 'selective' => false], $params));
+        return new static(array_merge(['remove_keyboard' => true, 'selective' => false], $params));
     }
 
     /**
