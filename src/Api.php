@@ -842,6 +842,8 @@ class Api
      *   'callback_query_id'  => '',
      *   'text'               => '',
      *   'show_alert'         => '',
+     *   'url'                => '',
+     *   'cache_time'         => '',
      * ];
      * </code>
      *
