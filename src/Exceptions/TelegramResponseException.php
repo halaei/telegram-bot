@@ -2,6 +2,7 @@
 
 namespace Telegram\Bot\Exceptions;
 
+use Exception;
 use Telegram\Bot\Objects\ResponseParameters;
 use Telegram\Bot\TelegramResponse;
 
@@ -23,18 +24,17 @@ class TelegramResponseException extends TelegramSDKException
     /**
      * Creates a TelegramResponseException.
      *
-     * @param TelegramResponse     $response          The response that threw the exception.
-     * @param TelegramSDKException $previousException The more detailed exception.
+     * @param TelegramResponse $response The response that threw the exception.
+     * @param string $message
+     * @param int $code
+     * @param Exception $previous
      */
-    public function __construct(TelegramResponse $response, TelegramSDKException $previousException = null)
+    public function __construct(TelegramResponse $response, $message = "", $code = 0, Exception $previous = null)
     {
         $this->response = $response;
         $this->responseData = $response->getDecodedBody();
 
-        $errorMessage = $this->get('description', 'Unknown error from API Response.');
-        $errorCode = $this->get('error_code', -1);
-
-        parent::__construct($errorMessage, $errorCode, $previousException);
+        parent::__construct($message, $code, $previous);
     }
 
     /**
@@ -48,15 +48,15 @@ class TelegramResponseException extends TelegramSDKException
     {
         $data = $response->getDecodedBody();
 
-        $code = null;
-        $message = null;
-        if (isset($data['ok'], $data['error_code']) && $data['ok'] === false) {
-            $code = $data['error_code'];
-            $message = isset($data['description']) ? $data['description'] : 'Unknown error from API.';
+        if ( ! isset($data['ok']) || ($data['ok'] === true && ! isset($data['result']))) {
+            return new TelegramMalformedResponseException($response, 'The ok/result fields are not set in the response', -2);
         }
 
-        // Others
-        return new static($response, new TelegramOtherException($message, $code));
+        $code = isset($data['error_code']) ? $data['error_code'] : -1;
+        $message = isset($data['description']) ? $data['description'] : 'Unknown error from API.';
+
+        return new static($response, $message, $code);
+
     }
 
     /**

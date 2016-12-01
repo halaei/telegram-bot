@@ -147,13 +147,23 @@ class TelegramResponse
     }
 
     /**
+     * Return the result.
+     *
+     * @return mixed
+     */
+    public function getResult()
+    {
+        return $this->decodedBody['result'];
+    }
+
+    /**
      * Checks if response is an error.
      *
      * @return bool
      */
     public function isError()
     {
-        return isset($this->decodedBody['ok']) && ($this->decodedBody['ok'] === false);
+        return ! isset($this->decodedBody['ok']) || ($this->decodedBody['ok'] !== true) || ! isset($this->decodedBody['result']);
     }
 
     /**

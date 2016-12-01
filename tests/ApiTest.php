@@ -356,13 +356,11 @@ class ApiTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_returns_a_successful_response_if_a_valid_chatAction_is_sent()
     {
-        $this->api = Mocker::createApiResponse([true]);
+        $this->api = Mocker::createApiResponse(true);
 
         $response = $this->api->sendChatAction(['chat_id' => 123456789, 'action' => 'typing']);
 
-        $this->assertInstanceOf(TelegramResponse::class, $response);
-        $this->assertTrue($response->getDecodedBody()['result'][0]);
-        $this->assertEquals(200, $response->getHttpStatusCode());
+        $this->assertTrue($response);
     }
 
     /** @test */
@@ -404,7 +402,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_returns_a_successful_message_object_if_correct_webhook_is_sent()
     {
-        $this->api = Mocker::createApiResponse([true]);
+        $this->api = Mocker::createApiResponse(true);
 
         $response = $this->api->setWebhook(['url' => 'https://example.com']);
 
@@ -415,12 +413,12 @@ class ApiTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_returns_a_successful_response_object_when_webhook_removed()
     {
-        $this->api = Mocker::createApiResponse([true]);
+        $this->api = Mocker::createApiResponse(true);
 
         $response = $this->api->removeWebhook();
 
         $this->assertInstanceOf(TelegramResponse::class, $response);
-        $this->assertTrue($response->getDecodedBody()['result'][0]);
+        $this->assertTrue($response->getDecodedBody()['result']);
         $this->assertEquals(200, $response->getHttpStatusCode());
     }
 

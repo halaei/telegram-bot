@@ -4,9 +4,7 @@ namespace Telegram\Bot;
 
 use Illuminate\Support\Collection;
 use Psr\Http\Message\StreamInterface;
-use Telegram\Bot\Exceptions\TelegramMalformedResponseException;
 use Telegram\Bot\Exceptions\TelegramSDKException;
-use Telegram\Bot\FileUpload\HttpUrl;
 use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\FileUpload\InputFileInterface;
 use Telegram\Bot\HttpClients\HttpClientInterface;
@@ -507,8 +505,6 @@ class Api
      *
      * @param array $params
      *
-     * @throws TelegramMalformedResponseException
-     *
      * @return Message|true
      */
     public function setGameScore(array $params)
@@ -516,10 +512,6 @@ class Api
         $response = $this->post('setGameScore', $params);
 
         $body = $response->getDecodedBody();
-
-        if (! isset($body['result'])) {
-            throw new TelegramMalformedResponseException($response, 'Undefined index result in decoded body');
-        }
 
         if ($body['result'] === true) {
             return true;
@@ -545,8 +537,6 @@ class Api
      *
      * @param array $params
      *
-     * @throws TelegramMalformedResponseException
-     *
      * @return GameHighScore[]
      */
     public function getGameHighScores(array $params)
@@ -554,10 +544,6 @@ class Api
         $response = $this->post('getGameHighScores', $params);
 
         $body = $response->getDecodedBody();
-
-        if (! isset($body['result'])) {
-            throw new TelegramMalformedResponseException($response, 'Undefined index result in decoded body');
-        }
 
         $scores = [];
 
@@ -697,7 +683,7 @@ class Api
      *
      * @throws TelegramSDKException
      *
-     * @return TelegramResponse
+     * @return true
      */
     public function sendChatAction(array $params)
     {
@@ -713,7 +699,7 @@ class Api
         ];
 
         if (isset($params['action']) && in_array($params['action'], $validActions)) {
-            return $this->post('sendChatAction', $params);
+            return $this->post('sendChatAction', $params)->getResult();
         }
 
         throw new TelegramSDKException('Invalid Action! Accepted value: '.implode(', ', $validActions));
@@ -797,15 +783,15 @@ class Api
      * @var int|string $params ['chat_id']
      * @var int        $params ['user_id']
      *
-     * @return TelegramResponse
+     * @return true
      */
     public function kickChatMember(array $params)
     {
-        return $this->post('kickChatMember', $params);
+        return $this->post('kickChatMember', $params)->getResult();
     }
 
 	/**
-	 *  Bot to leave a group, supergroup or channel.
+	 *  Use this method for your bot to leave a group, supergroup or channel.
 	 *
 	 * <code>
 	 * $params = [
@@ -819,11 +805,11 @@ class Api
 	 *
 	 * @var int|string $params ['chat_id']
 	 *
-	 * @return TelegramResponse
+	 * @return true
 	 */
     public function leaveChat(array $params)
     {
-	    return $this->post('leaveChat', $params);
+	    return $this->post('leaveChat', $params)->getResult();
     }
 
     /**
@@ -847,11 +833,11 @@ class Api
      * @var int|string $params ['chat_id']
      * @var int        $params ['user_id']
      *
-     * @return TelegramResponse
+     * @return true
      */
     public function unbanChatMember(array $params)
     {
-        return $this->post('unbanChatMember', $params);
+        return $this->post('unbanChatMember', $params)->getResult();
     }
 
     /**
@@ -877,11 +863,11 @@ class Api
      * @var string  $params ['text']
      * @var bool    $params ['show_alert']
      *
-     * @return TelegramResponse
+     * @return true
      */
     public function answerCallbackQuery(array $params)
     {
-        return $this->post('answerCallbackQuery', $params);
+        return $this->post('answerCallbackQuery', $params)->getResult();
     }
 
     /**
@@ -1022,6 +1008,7 @@ class Api
 
     /**
      * @param array $params
+     *
      * @return Chat
      */
     public function getChat(array $params)
@@ -1033,18 +1020,12 @@ class Api
 
     /**
      * @param array $params
+     *
      * @return ChatMember[]
-     * @throws TelegramMalformedResponseException
      */
     public function getChatAdministrators(array $params)
     {
-        $response = $this->post('getChatAdministrators', $params);
-        $body = $response->getDecodedBody();
-        if (! isset($body['result'])) {
-            throw new TelegramMalformedResponseException($response, 'Undefined index result in decoded body');
-        }
-
-        $result = $body['result'];
+        $result = $this->post('getChatAdministrators', $params)->getResult();
 
         $members = [];
 
@@ -1057,17 +1038,12 @@ class Api
 
     /**
      * @param array $params
+     *
      * @return int
-     * @throws TelegramMalformedResponseException
      */
     public function getChatMembersCount(array $params)
     {
-        $response = $this->post('getChatMembersCount', $params);
-        $body = $response->getDecodedBody();
-        if (! isset($body['result'])) {
-            throw new TelegramMalformedResponseException($response, 'Undefined index result in decoded body');
-        }
-        return $body['result'];
+        return $this->post('getChatMembersCount', $params)->getResult();
     }
 
     /**
