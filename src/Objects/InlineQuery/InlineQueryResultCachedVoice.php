@@ -26,7 +26,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  * @method $this setInputMessageContent($object)    Optional. Content of the message to be sent instead of the photo
  */
 
-class InlineQueryResultCachedVoice extends InlineBaseObject
+class InlineQueryResultCachedVoice extends InlineQueryResult
 {
     public function __construct($params = [])
     {

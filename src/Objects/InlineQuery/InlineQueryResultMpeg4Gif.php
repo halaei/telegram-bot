@@ -32,7 +32,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  * @method $this setInputMessageContent($object) Optional. Content of the message to be sent instead of the photo
  */
 
-class InlineQueryResultMpeg4Gif extends InlineBaseObject
+class InlineQueryResultMpeg4Gif extends InlineQueryResult
 {
     public function __construct($params = [])
     {

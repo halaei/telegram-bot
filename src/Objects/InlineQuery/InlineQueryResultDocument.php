@@ -34,7 +34,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  * @method $this setThumbUrl($string)               Optional. URL of the thumbnail (jpeg only) for the file
  * @method $this setThumbWidth($int)                Optional. Thumbnail width
  * @method $this setThumbHeight($int)               Optional. Thumbnail height */
-class InlineQueryResultDocument extends InlineBaseObject
+class InlineQueryResultDocument extends InlineQueryResult
 {
     public function __construct($params = [])
     {

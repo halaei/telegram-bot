@@ -25,7 +25,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  * @method $this setReplyMarkup($object)            Optional. Inline keyboard attached to the message
  * @method $this setInputMessageContent($object)    Optional. Content of the message to be sent instead of the photo
  */
-class InlineQueryResultCachedGif extends InlineBaseObject
+class InlineQueryResultCachedGif extends InlineQueryResult
 {
     public function __construct($params = [])
     {

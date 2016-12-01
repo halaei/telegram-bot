@@ -31,7 +31,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  * @method $this setThumbWidth($int)                Optional. Thumbnail width
  * @method $this setThumbHeight($int)               Optional. Thumbnail height
  */
-class InlineQueryResultContact extends InlineBaseObject
+class InlineQueryResultContact extends InlineQueryResult
 {
     public function __construct($params = [])
     {
