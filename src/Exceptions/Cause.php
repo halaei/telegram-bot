@@ -9,7 +9,7 @@ class Cause
     public static function userBlocked(\Exception $e)
     {
         return $e instanceof TelegramSDKException &&
-        Str::contains($e->getMessage(), 'blocked');
+        Str::contains($e->getMessage(), ['blocked', 'User is deactivated']);
     }
 
     public static function botWasKicked(\Exception $e)
@@ -33,5 +33,11 @@ class Cause
     {
         return $e instanceof TelegramSDKException &&
         Str::contains($e->getMessage(), 'Wrong file identifier');
+    }
+
+    public static function messageNotModified(\Exception $e)
+    {
+        return $e instanceof TelegramSDKException &&
+        Str::contains($e->getMessage(), 'message is not modified');
     }
 }
