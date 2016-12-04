@@ -10,7 +10,7 @@ class Cause
     {
         $closure = function (\Exception $e) {
             return $e instanceof TelegramResponseException &&
-            Str::contains($e->getMessage(), ['blocked', 'User is deactivated']);
+            Str::contains(mb_strtolower($e->getMessage()), ['blocked', 'user is deactivated']);
         };
 
         return is_null($e) ? $closure : $closure($e);
@@ -20,7 +20,7 @@ class Cause
     {
         $closure = function (\Exception $e) {
             return $e instanceof TelegramResponseException &&
-            Str::contains($e->getMessage(), 'bot was kicked');
+            Str::contains(mb_strtolower($e->getMessage()), 'bot was kicked');
         };
 
         return is_null($e) ? $closure : $closure($e);
@@ -39,7 +39,7 @@ class Cause
     {
         $closure = function (\Exception $e) {
             return $e instanceof TelegramResponseException &&
-            Str::contains($e->getMessage(), '[Error]: Bad Request: chat not found');
+            Str::contains(mb_strtolower($e->getMessage()), 'bad request: chat not found');
         };
 
         return is_null($e) ? $closure : $closure($e);
@@ -49,7 +49,7 @@ class Cause
     {
         $closure = function (\Exception $e) {
             return $e instanceof TelegramResponseException &&
-            Str::contains($e->getMessage(), 'Wrong file identifier');
+            Str::contains(mb_strtolower($e->getMessage()), 'wrong file identifier');
         };
 
         return is_null($e) ? $closure : $closure($e);
@@ -59,7 +59,7 @@ class Cause
     {
         $closure = function (\Exception $e) {
             return $e instanceof TelegramResponseException &&
-            Str::contains($e->getMessage(), 'message is not modified');
+            Str::contains(mb_strtolower($e->getMessage()), 'message is not modified');
         };
 
         return is_null($e) ? $closure : $closure($e);
