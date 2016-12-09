@@ -49,7 +49,7 @@ class TelegramResponseException extends TelegramSDKException
         $data = $response->getDecodedBody();
 
         if ( ! isset($data['ok']) || ($data['ok'] === true && ! isset($data['result']))) {
-            return new TelegramMalformedResponseException($response, 'The ok/result fields are not set in the response', -2);
+            return new TelegramMalformedResponseException($response, (string) $response->getBody(), $response->getHttpStatusCode());
         }
 
         $code = isset($data['error_code']) ? $data['error_code'] : -1;
