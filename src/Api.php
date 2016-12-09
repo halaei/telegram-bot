@@ -1075,8 +1075,10 @@ class Api
      *
      * <code>
      * $params = [
-     *   'url'         => '',
-     *   'certificate' => '',
+     *   'url'             => '',
+     *   'certificate'     => '',
+     *   'max_connections' => '',
+     *   'allowed_updates' => '',
      * ];
      * </code>
      *
@@ -1084,13 +1086,21 @@ class Api
      *
      * @param array $params
      *
-     * @var string  $params ['url']         HTTPS url to send updates to.
-     * @var string  $params ['certificate'] Upload your public key certificate so that the root certificate in
-     *                                      use can be checked.
+     * @var string  $params ['url']                HTTPS url to send updates to.
+     * @var string  $params ['certificate']        Upload your public key certificate so that the root certificate in
+     *                                             use can be checked.
+     * @var string  $params ['max_connections']    Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100.
+     *                                             Defaults to 40.
+     *                                             Use lower values to limit the load on your bot‘s server, and higher values to increase your bot’s throughput.
+     * @var string[]  $params ['allowed_updates']  List the types of updates you want your bot to receive.
+     *                                             For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
+     *                                             See Update for a complete list of available update types.
+     *                                             Specify an empty list to receive all updates regardless of type (default).
+     *                                             If not specified, the previous setting will be used.
      *
      * @throws TelegramSDKException
      *
-     * @return TelegramResponse
+     * @return true on success
      */
     public function setWebhook(array $params)
     {
@@ -1102,7 +1112,9 @@ class Api
             throw new TelegramSDKException('Invalid URL, should be a HTTPS url.');
         }
 
-        return $this->uploadFile('setWebhook', $params, ['certificate']);
+        $this->uploadFile('setWebhook', $params, ['certificate']);
+
+        return $this->getLastResponse()->getResult();
     }
 
     /**
@@ -1133,13 +1145,23 @@ class Api
     /**
      * Removes the outgoing webhook (if any).
      *
-     * @return TelegramResponse
+     * @deprecated
+     *
+     * @return true on success.
      */
     public function removeWebhook()
     {
-        $url = '';
+        return $this->deleteWebhook();
+    }
 
-        return $this->post('setWebhook', compact('url'));
+    /**
+     * Use this method to remove webhook integration if you decide to switch back to getUpdates.
+     *
+     * @return true on success.
+     */
+    public function deleteWebhook()
+    {
+        return $this->post('deleteWebhook')->getResult();
     }
 
     /**

@@ -400,26 +400,23 @@ class ApiTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function it_returns_a_successful_message_object_if_correct_webhook_is_sent()
+    public function it_returns_true_if_correct_webhook_is_sent()
     {
         $this->api = Mocker::createApiResponse(true);
 
         $response = $this->api->setWebhook(['url' => 'https://example.com']);
 
-        $this->assertInstanceOf(Message::class, $response);
-        $this->assertTrue($response[0]);
+        $this->assertTrue($response);
     }
 
     /** @test */
-    public function it_returns_a_successful_response_object_when_webhook_removed()
+    public function it_returns_true_when_webhook_removed()
     {
         $this->api = Mocker::createApiResponse(true);
 
-        $response = $this->api->removeWebhook();
+        $response = $this->api->deleteWebhook();
 
-        $this->assertInstanceOf(TelegramResponse::class, $response);
-        $this->assertTrue($response->getDecodedBody()['result']);
-        $this->assertEquals(200, $response->getHttpStatusCode());
+        $this->assertTrue($response);
     }
 
     /**
