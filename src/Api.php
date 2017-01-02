@@ -2,6 +2,7 @@
 
 namespace Telegram\Bot;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\StreamInterface;
 use Telegram\Bot\Exceptions\TelegramSDKException;
@@ -906,6 +907,11 @@ class Api
     public function editMessageText(array $params)
     {
         $response = $this->post('editMessageText', $params);
+
+        //todo: generalize and cleanup
+        if ($response instanceof PromiseInterface) {
+            return new Message([]);
+        }
 
         return new Message($response->getDecodedBody());
     }
