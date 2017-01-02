@@ -25,7 +25,7 @@ class GuzzleHttpClient
     /**
      * @var PromiseInterface[]
      */
-    private static $promises = [];
+    protected $promises = [];
 
     /**
      * Timeout of the request in seconds.
@@ -54,7 +54,7 @@ class GuzzleHttpClient
      */
     public function __destruct()
     {
-        Promise\unwrap(self::$promises);
+        $this->unwrap();
     }
 
     /**
@@ -113,7 +113,7 @@ class GuzzleHttpClient
             $response = $this->getClient()->requestAsync($method, $url, $options);
 
             if ($isAsyncRequest) {
-                self::$promises[] = $response;
+                $this->promises[] = $response;
             } else {
                 $response = $response->wait();
             }
@@ -126,6 +126,18 @@ class GuzzleHttpClient
         }
 
         return $response;
+    }
+
+    /**
+     * Unwrap Promises.
+     */
+    public function unwrap()
+    {
+        try {
+            return Promise\unwrap($this->promises);
+        } finally {
+            $this->promises = [];
+        }
     }
 
     /**

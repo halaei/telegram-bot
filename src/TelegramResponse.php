@@ -15,24 +15,9 @@ use Telegram\Bot\Exceptions\TelegramSDKException;
 class TelegramResponse
 {
     /**
-     * @var null|int The HTTP status code response from API.
-     */
-    protected $httpStatusCode;
-
-    /**
-     * @var array The headers returned from API request.
-     */
-    protected $headers;
-
-    /**
-     * @var string The raw body of the response from API request.
-     */
-    protected $body;
-
-    /**
      * @var array The decoded body of the API response.
      */
-    protected $decodedBody = [];
+    protected $decodedBody = null;
 
     /**
      * @var string API Endpoint used to make the request.
@@ -43,6 +28,11 @@ class TelegramResponse
      * @var TelegramRequest The original request that returned this response.
      */
     protected $request;
+
+    /**
+     * @var PromiseInterface|ResponseInterface
+     */
+    protected $response;
 
     /**
      * @var TelegramSDKException The exception thrown by this request.
@@ -57,22 +47,17 @@ class TelegramResponse
      */
     public function __construct(TelegramRequest $request, $response)
     {
-        if ($response instanceof ResponseInterface) {
-            $this->httpStatusCode = $response->getStatusCode();
-            $this->body = $response->getBody();
-            $this->headers = $response->getHeaders();
+        $this->request = $request;
+        $this->endPoint = (string) $request->getEndpoint();
+        $this->response = $response;
 
-            $this->decodeBody();
+        if ($response instanceof ResponseInterface) {
         } elseif ($response instanceof PromiseInterface) {
-            $this->httpStatusCode = null;
         } else {
             throw new \InvalidArgumentException(
                 'Second constructor argument "response" must be instance of ResponseInterface or PromiseInterface'
             );
         }
-
-        $this->request = $request;
-        $this->endPoint = (string) $request->getEndpoint();
     }
 
     /**
@@ -93,7 +78,9 @@ class TelegramResponse
      */
     public function getHttpStatusCode()
     {
-        return $this->httpStatusCode;
+        $this->wait();
+
+        return $this->response->getStatusCode();
     }
 
     /**
@@ -123,7 +110,9 @@ class TelegramResponse
      */
     public function getHeaders()
     {
-        return $this->headers;
+        $this->wait();
+
+        return $this->response->getHeaders();
     }
 
     /**
@@ -133,7 +122,9 @@ class TelegramResponse
      */
     public function getBody()
     {
-        return $this->body;
+        $this->wait();
+
+        return $this->response->getBody()->getContents();
     }
 
     /**
@@ -143,6 +134,10 @@ class TelegramResponse
      */
     public function getDecodedBody()
     {
+        if (is_null($this->decodedBody)) {
+            $this->decodeBody();
+        }
+
         return $this->decodedBody;
     }
 
@@ -153,7 +148,7 @@ class TelegramResponse
      */
     public function getResult()
     {
-        return $this->decodedBody['result'];
+        return $this->getDecodedBody()['result'];
     }
 
     /**
@@ -163,7 +158,9 @@ class TelegramResponse
      */
     public function isError()
     {
-        return ! isset($this->decodedBody['ok']) || ($this->decodedBody['ok'] !== true) || ! isset($this->decodedBody['result']);
+        $body = $this->getDecodedBody();
+
+        return ! isset($body['ok']) || ($body['ok'] !== true) || ! isset($body['result']);
     }
 
     /**
@@ -197,13 +194,15 @@ class TelegramResponse
     /**
      * Converts raw API response to proper decoded response.
      */
-    public function decodeBody()
+    protected function decodeBody()
     {
-        $this->decodedBody = json_decode($this->body, true);
+        $this->wait();
+
+        $this->decodedBody = json_decode($body = $this->response->getBody()->getContents(), true);
 
         if ($this->decodedBody === null) {
             $this->decodedBody = [];
-            parse_str($this->body, $this->decodedBody);
+            parse_str($body, $this->decodedBody);
         }
 
         if (!is_array($this->decodedBody)) {
@@ -212,6 +211,16 @@ class TelegramResponse
 
         if ($this->isError()) {
             $this->makeException();
+        }
+    }
+
+    /**
+     * Wait for the promise
+     */
+    protected function wait()
+    {
+        if ($this->response instanceof PromiseInterface) {
+            $this->response = $this->response->wait();
         }
     }
 }

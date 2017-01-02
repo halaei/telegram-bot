@@ -87,11 +87,11 @@ class Api
             throw new TelegramSDKException('Required "token" not supplied in config and could not find fallback environment variable "'.static::BOT_TOKEN_ENV_NAME.'"');
         }
 
+        $this->client = new TelegramClient($httpClientHandler);
+
         if (isset($async)) {
             $this->setAsyncRequest($async);
         }
-
-        $this->client = new TelegramClient($httpClientHandler);
     }
 
     /**
@@ -154,6 +154,10 @@ class Api
     public function setAsyncRequest($isAsyncRequest)
     {
         $this->isAsyncRequest = $isAsyncRequest;
+
+        if (! $this->isAsyncRequest()) {
+            $this->client->getHttpClientHandler()->unwrap();
+        }
 
         return $this;
     }
