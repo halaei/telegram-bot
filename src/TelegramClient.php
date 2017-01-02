@@ -6,7 +6,6 @@ use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\HttpClients\GuzzleHttpClient;
-use Telegram\Bot\HttpClients\HttpClientInterface;
 
 /**
  * Class TelegramClient.
@@ -29,16 +28,16 @@ class TelegramClient
     const DEFAULT_VIDEO_UPLOAD_REQUEST_TIMEOUT = 7200;
 
     /**
-     * @var HttpClientInterface|null HTTP Client
+     * @var GuzzleHttpClient HTTP Client
      */
     protected $httpClientHandler;
 
     /**
      * Instantiates a new TelegramClient object.
      *
-     * @param HttpClientInterface|null $httpClientHandler
+     * @param GuzzleHttpClient|null $httpClientHandler
      */
-    public function __construct(HttpClientInterface $httpClientHandler = null)
+    public function __construct(GuzzleHttpClient $httpClientHandler = null)
     {
         $this->httpClientHandler = $httpClientHandler ?: new GuzzleHttpClient();
     }
@@ -46,9 +45,9 @@ class TelegramClient
     /**
      * Sets the HTTP client handler.
      *
-     * @param HttpClientInterface $httpClientHandler
+     * @param GuzzleHttpClient $httpClientHandler
      */
-    public function setHttpClientHandler(HttpClientInterface $httpClientHandler)
+    public function setHttpClientHandler(GuzzleHttpClient $httpClientHandler)
     {
         $this->httpClientHandler = $httpClientHandler;
     }
@@ -56,7 +55,7 @@ class TelegramClient
     /**
      * Returns the HTTP client handler.
      *
-     * @return HttpClientInterface
+     * @return GuzzleHttpClient
      */
     public function getHttpClientHandler()
     {

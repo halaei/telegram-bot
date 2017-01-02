@@ -13,7 +13,7 @@ use Telegram\Bot\Exceptions\TelegramSDKException;
 /**
  * Class GuzzleHttpClient.
  */
-class GuzzleHttpClient implements HttpClientInterface
+class GuzzleHttpClient
 {
     /**
      * HTTP client.
@@ -82,7 +82,17 @@ class GuzzleHttpClient implements HttpClientInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param            $url
+     * @param            $method
+     * @param array      $headers
+     * @param array      $options
+     * @param int        $timeOut
+     * @param bool|false $isAsyncRequest
+     * @param int        $connectTimeOut
+     *
+     * @throws TelegramSDKException
+     *
+     * @return mixed
      */
     public function send(
         $url,

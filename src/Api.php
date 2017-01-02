@@ -7,7 +7,7 @@ use Psr\Http\Message\StreamInterface;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\FileUpload\InputFileInterface;
-use Telegram\Bot\HttpClients\HttpClientInterface;
+use Telegram\Bot\HttpClients\GuzzleHttpClient;
 use Telegram\Bot\Objects\Chat;
 use Telegram\Bot\Objects\ChatMember;
 use Telegram\Bot\Objects\File;
@@ -76,7 +76,7 @@ class Api
      * @param string              $token                      The Telegram Bot API Access Token.
      * @param bool                $async                      (Optional) Indicates if the request to Telegram
      *                                                        will be asynchronous (non-blocking).
-     * @param HttpClientInterface $httpClientHandler          (Optional) Custom HTTP Client Handler.
+     * @param GuzzleHttpClient $httpClientHandler          (Optional) Custom HTTP Client Handler.
      *
      * @throws TelegramSDKException
      */
