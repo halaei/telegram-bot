@@ -2,7 +2,7 @@
 
 namespace Telegram\Bot;
 
-use GuzzleHttp\Promise\PromiseInterface;
+use Closure;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\StreamInterface;
 use Telegram\Bot\Exceptions\TelegramSDKException;
@@ -179,13 +179,15 @@ class Api
      *
      * @link https://core.telegram.org/bots/api#getme
      *
-     * @return User
+     * @return User|Closure
      */
     public function getMe()
     {
         $response = $this->post('getMe');
 
-        return new User($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new User($response->getDecodedBody());
+        });
     }
 
     /**
@@ -215,13 +217,15 @@ class Api
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendMessage(array $params)
     {
         $response = $this->post('sendMessage', $params);
 
-        return new Message($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -245,13 +249,15 @@ class Api
      * @var bool       $params ['disable_notification']
      * @var int        $params ['message_id']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function forwardMessage(array $params)
     {
         $response = $this->post('forwardMessage', $params);
 
-        return new Message($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -279,7 +285,7 @@ class Api
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendPhoto(array $params)
     {
@@ -316,7 +322,7 @@ class Api
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendAudio(array $params)
     {
@@ -348,7 +354,7 @@ class Api
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendDocument(array $params)
     {
@@ -380,7 +386,7 @@ class Api
      *
      * @throws TelegramSDKException
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendSticker(array $params)
     {
@@ -423,7 +429,7 @@ class Api
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendVideo(array $params)
     {
@@ -456,7 +462,7 @@ class Api
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendVoice(array $params)
     {
@@ -480,13 +486,15 @@ class Api
      *
      * @param array $params
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendGame(array $params)
     {
         $response = $this->post('sendGame', $params);
 
-        return new Message($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -510,19 +518,21 @@ class Api
      *
      * @param array $params
      *
-     * @return Message|true
+     * @return Message|true|Closure
      */
     public function setGameScore(array $params)
     {
         $response = $this->post('setGameScore', $params);
 
-        $body = $response->getDecodedBody();
+        return $this->prepareResponse(function () use ($response) {
+            $body = $response->getDecodedBody();
 
-        if ($body['result'] === true) {
-            return true;
-        }
+            if ($body['result'] === true) {
+                return true;
+            }
 
-        return new Message($body);
+            return new Message($body);
+        });
     }
 
     /**
@@ -542,21 +552,23 @@ class Api
      *
      * @param array $params
      *
-     * @return GameHighScore[]
+     * @return GameHighScore[]|Closure
      */
     public function getGameHighScores(array $params)
     {
         $response = $this->post('getGameHighScores', $params);
 
-        $body = $response->getDecodedBody();
+        return $this->prepareResponse(function () use ($response) {
+            $body = $response->getDecodedBody();
 
-        $scores = [];
+            $scores = [];
 
-        foreach ($body['result'] as $score) {
-            $scores[] = new GameHighScore($score);
-        }
+            foreach ($body['result'] as $score) {
+                $scores[] = new GameHighScore($score);
+            }
 
-        return $scores;
+            return $scores;
+        });
     }
 
     /**
@@ -584,13 +596,15 @@ class Api
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendLocation(array $params)
     {
         $response = $this->post('sendLocation', $params);
 
-        return new Message($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -624,13 +638,15 @@ class Api
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendVenue(array $params)
     {
         $response = $this->post('sendVenue', $params);
 
-        return new Message($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -660,13 +676,15 @@ class Api
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function sendContact(array $params)
     {
         $response = $this->post('sendContact', $params);
 
-        return new Message($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -688,7 +706,7 @@ class Api
      *
      * @throws TelegramSDKException
      *
-     * @return true
+     * @return true|Closure
      */
     public function sendChatAction(array $params)
     {
@@ -704,7 +722,11 @@ class Api
         ];
 
         if (isset($params['action']) && in_array($params['action'], $validActions)) {
-            return $this->post('sendChatAction', $params)->getResult();
+            $response = $this->post('sendChatAction', $params);
+
+            return $this->prepareResponse(function () use ($response) {
+                return $response->getResult();
+            });
         }
 
         throw new TelegramSDKException('Invalid Action! Accepted value: '.implode(', ', $validActions));
@@ -729,13 +751,15 @@ class Api
      * @var int     $params ['offset']
      * @var int     $params ['limit']
      *
-     * @return UserProfilePhotos
+     * @return UserProfilePhotos|Closure
      */
     public function getUserProfilePhotos(array $params)
     {
         $response = $this->post('getUserProfilePhotos', $params);
 
-        return new UserProfilePhotos($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new UserProfilePhotos($response->getDecodedBody());
+        });
     }
 
     /**
@@ -757,13 +781,15 @@ class Api
      *
      * @var string  $params ['file_id']
      *
-     * @return File
+     * @return File|Closure
      */
     public function getFile(array $params)
     {
         $response = $this->post('getFile', $params);
 
-        return new File($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new File($response->getDecodedBody());
+        });
     }
 
     /**
@@ -788,11 +814,15 @@ class Api
      * @var int|string $params ['chat_id']
      * @var int        $params ['user_id']
      *
-     * @return true
+     * @return true|Closure
      */
     public function kickChatMember(array $params)
     {
-        return $this->post('kickChatMember', $params)->getResult();
+        $response = $this->post('kickChatMember', $params);
+
+        return $this->prepareResponse(function () use ($response) {
+            return $response->getResult();
+        });
     }
 
 	/**
@@ -810,11 +840,15 @@ class Api
 	 *
 	 * @var int|string $params ['chat_id']
 	 *
-	 * @return true
+	 * @return true|Closure
 	 */
     public function leaveChat(array $params)
     {
-	    return $this->post('leaveChat', $params)->getResult();
+        $response = $this->post('leaveChat', $params);
+
+        return $this->prepareResponse(function () use ($response) {
+            return $response->getResult();
+        });
     }
 
     /**
@@ -838,11 +872,15 @@ class Api
      * @var int|string $params ['chat_id']
      * @var int        $params ['user_id']
      *
-     * @return true
+     * @return true|Closure
      */
     public function unbanChatMember(array $params)
     {
-        return $this->post('unbanChatMember', $params)->getResult();
+        $response = $this->post('unbanChatMember', $params);
+
+        return $this->prepareResponse(function () use ($response) {
+            return $response->getResult();
+        });
     }
 
     /**
@@ -868,11 +906,15 @@ class Api
      * @var string  $params ['text']
      * @var bool    $params ['show_alert']
      *
-     * @return true
+     * @return true|Closure
      */
     public function answerCallbackQuery(array $params)
     {
-        return $this->post('answerCallbackQuery', $params)->getResult();
+        $response = $this->post('answerCallbackQuery', $params);
+
+        return $this->prepareResponse(function () use ($response) {
+            return $response->getResult();
+        });
     }
 
     /**
@@ -902,18 +944,15 @@ class Api
      * @var bool       $params ['disable_web_page_preview']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function editMessageText(array $params)
     {
         $response = $this->post('editMessageText', $params);
 
-        //todo: generalize and cleanup
-        if ($response instanceof PromiseInterface) {
-            return new Message([]);
-        }
-
-        return new Message($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -939,13 +978,15 @@ class Api
      * @var string     $params ['caption']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function editMessageCaption(array $params)
     {
         $response = $this->post('editMessageCaption', $params);
 
-        return new Message($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -969,13 +1010,15 @@ class Api
      * @var string     $params ['inline_message_id']
      * @var string     $params ['reply_markup']
      *
-     * @return Message
+     * @return Message|Closure
      */
     public function editMessageReplyMarkup(array $params)
     {
         $response = $this->post('editMessageReplyMarkup', $params);
 
-        return new Message($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -1005,7 +1048,7 @@ class Api
      * @var string|null $params ['switch_pm_text']
      * @var string|null $params ['switch_pm_parameter']
      *
-     * @return bool
+     * @return true|Closure
      */
     public function answerInlineQuery(array $params = [])
     {
@@ -1013,71 +1056,89 @@ class Api
             $params['results'] = json_encode($params['results']);
         }
 
-        return $this->post('answerInlineQuery', $params);
+        $response = $this->post('answerInlineQuery', $params);
+
+        return $this->prepareResponse(function () use ($response) {
+            return $response->getResult();
+        });
+
     }
 
     /**
      * @param array $params
      *
-     * @return Chat
+     * @return Chat|Closure
      */
     public function getChat(array $params)
     {
         $response = $this->post('getChat', $params);
 
-        return new Chat($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new Chat($response->getDecodedBody());
+        });
     }
 
     /**
      * @param array $params
      *
-     * @return ChatMember[]
+     * @return ChatMember[]|Closure
      */
     public function getChatAdministrators(array $params)
     {
-        $result = $this->post('getChatAdministrators', $params)->getResult();
+        $response = $this->post('getChatAdministrators', $params);
 
-        $members = [];
+        return $this->prepareResponse(function () use ($response) {
+            $members = [];
 
-        foreach ($result as $member) {
-            $members[] = new ChatMember($member);
-        }
+            foreach ($response->getResult() as $member) {
+                $members[] = new ChatMember($member);
+            }
 
-        return $members;
+            return $members;
+        });
     }
 
     /**
      * @param array $params
      *
-     * @return int
+     * @return int|Closure
      */
     public function getChatMembersCount(array $params)
     {
-        return $this->post('getChatMembersCount', $params)->getResult();
+        $response = $this->post('getChatMembersCount', $params);
+
+        return $this->prepareResponse(function () use ($response) {
+            return $response->getResult();
+        });
     }
 
     /**
      * @param array $params
-     * @return ChatMember
+     *
+     * @return ChatMember|Closure
      */
     public function getChatMember(array $params)
     {
         $response = $this->post('getChatMember', $params);
 
-        return new ChatMember($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new ChatMember($response->getDecodedBody());
+        });
     }
 
     /**
      * Use this method to get current webhook status. Requires no parameters.
      * On success, returns a WebhookInfo object. If the bot is using getUpdates, will return an object with the url field empty.
      *
-     * @return WebhookInfo
+     * @return WebhookInfo|Closure
      */
     public function getWebhookInfo()
     {
         $response = $this->post('getWebhookInfo');
 
-        return new WebhookInfo($response->getDecodedBody());
+        return $this->prepareResponse(function () use ($response) {
+            return new WebhookInfo($response->getDecodedBody());
+        });
     }
 
     /**
@@ -1122,9 +1183,7 @@ class Api
             throw new TelegramSDKException('Invalid URL, should be a HTTPS url.');
         }
 
-        $this->uploadFile('setWebhook', $params, ['certificate']);
-
-        return $this->getLastResponse()->getResult();
+        return $this->uploadFile('setWebhook', $params, ['certificate']);
     }
 
     /**
@@ -1167,11 +1226,15 @@ class Api
     /**
      * Use this method to remove webhook integration if you decide to switch back to getUpdates.
      *
-     * @return true on success.
+     * @return true|Closure
      */
     public function deleteWebhook()
     {
-        return $this->post('deleteWebhook')->getResult();
+        $response = $this->post('deleteWebhook');
+
+        return $this->prepareResponse(function () use ($response) {
+            return $response->getResult();
+        });
     }
 
     /**
@@ -1192,24 +1255,26 @@ class Api
      * @var int|null $params ['limit']
      * @var int|null $params ['timeout']
      *
-     * @return Update[]|Collection
+     * @return Update[]|Collection|Closure
      */
     public function getUpdates(array $params = [])
     {
         $response = $this->post('getUpdates', $params);
-        $updates = $response->getDecodedBody();
 
-        /** @var Update[] $data */
-        $data = [];
-        if (isset($updates['result'])) {
-            foreach ($updates['result'] as $body) {
-                $update = new Update($body);
+        return $this->prepareResponse(function () use ($response) {
+            $updates = $response->getDecodedBody();
 
-                $data[] = $update;
+            $data = [];
+            if (isset($updates['result'])) {
+                foreach ($updates['result'] as $body) {
+                    $update = new Update($body);
+
+                    $data[] = $update;
+                }
             }
-        }
 
-        return new Collection($data);
+            return new Collection($data);
+        });
     }
 
     /**
@@ -1359,7 +1424,7 @@ class Api
      *
      * @throws TelegramSDKException
      *
-     * @return Message
+     * @return Message|true|Closure
      */
     protected function uploadFile($endpoint, array $params, array $files)
     {
@@ -1389,7 +1454,14 @@ class Api
 
         $response = $this->post($endpoint, $multipart_params, true);
 
-        return new Message($response->getDecodedBody());
+
+        return $this->prepareResponse(function () use ($response, $endpoint) {
+            if ($endpoint == 'setWebhook') {
+                return $response->getResult();
+            }
+
+            return new Message($response->getDecodedBody());
+        });
     }
 
     /**
@@ -1436,6 +1508,22 @@ class Api
             $this->getTimeOut(),
             $this->getConnectTimeOut()
         );
+    }
+
+    /**
+     * Send the Closure $response if Api is in async mode, otherwise send the return value of the Closure $response.
+     *
+     * @param Closure $response
+     *
+     * @return Closure|mixed
+     */
+    protected function prepareResponse(Closure $response)
+    {
+        if ($this->isAsyncRequest()) {
+            return $response;
+        }
+
+        return $response();
     }
 
     /**

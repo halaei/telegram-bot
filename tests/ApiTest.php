@@ -85,6 +85,16 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('bool', $isAsync);
     }
 
+    public function test_it_returns_closure_in_async_mode()
+    {
+        $this->api = Mocker::createApiResponse(['message_id' => 23, 'text' => 'text']);
+        $this->api->setAsyncRequest(true);
+        $response = $this->api->sendMessage(['chat_id' => 1234, 'text' => 'text']);
+        $this->assertInstanceOf(\Closure::class, $response);
+        $this->assertInstanceOf(Message::class, $response());
+        $this->assertEquals(23, $response()->getMessageId());
+    }
+
     /**
      * @test
      * @expectedException \Telegram\Bot\Exceptions\TelegramResponseException

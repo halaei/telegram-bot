@@ -92,7 +92,7 @@ class GuzzleHttpClient
      *
      * @throws TelegramSDKException
      *
-     * @return mixed
+     * @return PromiseInterface|ResponseInterface
      */
     public function send(
         $url,
