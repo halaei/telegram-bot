@@ -146,6 +146,14 @@ class Api
     }
 
     /**
+     * Wait for async requests to be completed.
+     */
+    public function asyncWait()
+    {
+        $this->client->getHttpClientHandler()->unwrap();
+    }
+
+    /**
      * Make this request asynchronous (non-blocking).
      *
      * @param bool $isAsyncRequest
@@ -157,7 +165,7 @@ class Api
         $this->isAsyncRequest = $isAsyncRequest;
 
         if (! $this->isAsyncRequest()) {
-            $this->client->getHttpClientHandler()->unwrap();
+            $this->asyncWait();
         }
 
         return $this;
