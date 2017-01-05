@@ -160,6 +160,7 @@ class GuzzleHttpClient
             RequestOptions::TIMEOUT         => $timeOut,
             RequestOptions::CONNECT_TIMEOUT => $connectTimeOut,
             RequestOptions::SYNCHRONOUS     => !$isAsyncRequest,
+            RequestOptions::HTTP_ERRORS     => false,
         ];
 
         return array_merge($default_options, $options);
