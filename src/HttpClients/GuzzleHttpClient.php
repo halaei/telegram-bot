@@ -36,11 +36,11 @@ class GuzzleHttpClient
     }
 
     /**
-     * Unwrap Promises.
+     * Wait for the responses of async requests.
      */
     public function __destruct()
     {
-        $this->unwrap();
+        $this->asyncWait();
     }
 
     /**
@@ -81,15 +81,16 @@ class GuzzleHttpClient
     }
 
     /**
-     * Unwrap Promises.
+     * Wait for the responses of async requests.
+     *
+     * @return array
      */
-    public function unwrap()
+    public function asyncWait()
     {
-        try {
-            return Promise\unwrap($this->promises);
-        } finally {
-            $this->promises = [];
-        }
+        $results = Promise\inspect_all($this->promises);
+        $this->promises = [];
+
+        return $results;
     }
 
     /**

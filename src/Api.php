@@ -146,11 +146,11 @@ class Api
     }
 
     /**
-     * Wait for async requests to be completed.
+     * Wait for the responses of async requests.
      */
     public function asyncWait()
     {
-        $this->client->getHttpClientHandler()->unwrap();
+        $this->client->getHttpClientHandler()->asyncWait();
     }
 
     /**
