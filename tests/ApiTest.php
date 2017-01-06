@@ -164,7 +164,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
             ]
         );
         $client = \Mockery::mock(GuzzleHttpClient::class);
-        $client->shouldReceive('unwrap');
+        $client->shouldReceive('asyncWait');
         $response = new Response(200, [], json_encode([
             'ok'          => true,
             'description' => '',
