@@ -18,16 +18,6 @@ class TelegramClient
     const BASE_BOT_URL = 'https://api.telegram.org/bot';
 
     /**
-     * @const int The timeout in seconds for a request that contains file uploads.
-     */
-    const DEFAULT_FILE_UPLOAD_REQUEST_TIMEOUT = 3600;
-
-    /**
-     * @const int The timeout in seconds for a request that contains video uploads.
-     */
-    const DEFAULT_VIDEO_UPLOAD_REQUEST_TIMEOUT = 7200;
-
-    /**
      * @var GuzzleHttpClient HTTP Client
      */
     protected $httpClientHandler;
@@ -40,16 +30,6 @@ class TelegramClient
     public function __construct(GuzzleHttpClient $httpClientHandler = null)
     {
         $this->httpClientHandler = $httpClientHandler ?: new GuzzleHttpClient();
-    }
-
-    /**
-     * Sets the HTTP client handler.
-     *
-     * @param GuzzleHttpClient $httpClientHandler
-     */
-    public function setHttpClientHandler(GuzzleHttpClient $httpClientHandler)
-    {
-        $this->httpClientHandler = $httpClientHandler;
     }
 
     /**
@@ -79,7 +59,7 @@ class TelegramClient
      *
      * @return array
      */
-    public function prepareRequest(TelegramRequest $request)
+    protected function prepareRequest(TelegramRequest $request)
     {
         $url = $this->getBaseBotUrl().$request->getAccessToken().'/'.$request->getEndpoint();
 

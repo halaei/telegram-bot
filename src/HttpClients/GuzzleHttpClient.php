@@ -28,20 +28,6 @@ class GuzzleHttpClient
     protected $promises = [];
 
     /**
-     * Timeout of the request in seconds.
-     *
-     * @var int
-     */
-    protected $timeOut = 30;
-
-    /**
-     * Connection timeout of the request in seconds.
-     *
-     * @var int
-     */
-    protected $connectTimeOut = 10;
-
-    /**
      * @param Client|null $client
      */
     public function __construct(Client $client = null)
@@ -58,59 +44,25 @@ class GuzzleHttpClient
     }
 
     /**
-     * Sets HTTP client.
-     *
-     * @param Client $client
-     *
-     * @return GuzzleHttpClient
-     */
-    public function setClient(Client $client)
-    {
-        $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * Gets HTTP client for internal class use.
-     *
-     * @return Client
-     */
-    private function getClient()
-    {
-        return $this->client;
-    }
-
-    /**
      * @param            $url
      * @param            $method
      * @param array      $headers
      * @param array      $options
      * @param int        $timeOut
-     * @param bool|false $isAsyncRequest
+     * @param bool       $isAsyncRequest
      * @param int        $connectTimeOut
      *
      * @throws TelegramSDKException
      *
      * @return PromiseInterface|ResponseInterface
      */
-    public function send(
-        $url,
-        $method,
-        array $headers = [],
-        array $options = [],
-        $timeOut = 30,
-        $isAsyncRequest = false,
-        $connectTimeOut = 10
-    ) {
-        $this->timeOut = $timeOut;
-        $this->connectTimeOut = $connectTimeOut;
-
+    public function send($url, $method, array $headers, array $options, $timeOut, $isAsyncRequest, $connectTimeOut)
+    {
         $body = isset($options['body']) ? $options['body'] : null;
         $options = $this->getOptions($headers, $body, $options, $timeOut, $isAsyncRequest, $connectTimeOut);
 
         try {
-            $response = $this->getClient()->requestAsync($method, $url, $options);
+            $response = $this->client->requestAsync($method, $url, $options);
 
             if ($isAsyncRequest) {
                 $this->promises[] = $response;
@@ -152,7 +104,7 @@ class GuzzleHttpClient
      *
      * @return array
      */
-    private function getOptions(array $headers, $body, $options, $timeOut, $isAsyncRequest = false, $connectTimeOut = 10)
+    protected function getOptions(array $headers, $body, $options, $timeOut, $isAsyncRequest, $connectTimeOut)
     {
         $default_options = [
             RequestOptions::HEADERS         => $headers,
@@ -164,21 +116,5 @@ class GuzzleHttpClient
         ];
 
         return array_merge($default_options, $options);
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimeOut()
-    {
-        return $this->timeOut;
-    }
-
-    /**
-     * @return int
-     */
-    public function getConnectTimeOut()
-    {
-        return $this->connectTimeOut;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Telegram\Bot\Tests;
 
+use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Psr7\Response;
 use Telegram\Bot\Api;
 use InvalidArgumentException;
 use Telegram\Bot\Exceptions\TelegramResponseException;
@@ -161,16 +163,24 @@ class ApiTest extends \PHPUnit_Framework_TestCase
                 'text' => $text,
             ]
         );
+        $client = \Mockery::mock(GuzzleHttpClient::class);
+        $client->shouldReceive('unwrap');
+        $response = new Response(200, [], json_encode([
+            'ok'          => true,
+            'description' => '',
+            'result'      => '{}',
+        ]));
+        $client->shouldReceive('send')->once()
+            ->with("https://api.telegram.org/bottoken/sendMessage", "POST", \Mockery::any(), \Mockery::any(), 1, false, 1)
+            ->andReturn($response);
+        $this->api = new Api('token', false, $client);
 
         $this->api->setTimeOut(1);
         $this->api->setConnectTimeOut(1);
 
         $this->api->sendMessage(['chat_id' => $chatId, 'text' => $text]);
 
-        /** @var GuzzleHttpClient $clientHandler */
-        $clientHandler = $this->api->getClient()->getHttpClientHandler();
-        $this->assertEquals(1, $clientHandler->getTimeOut());
-        $this->assertEquals(1, $clientHandler->getConnectTimeOut());
+        $this->api->getClient()->getHttpClientHandler();
     }
 
     /** @test */
