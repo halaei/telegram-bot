@@ -15,6 +15,11 @@ use Telegram\Bot\Exceptions\TelegramSDKException;
 class TelegramResponse
 {
     /**
+     * @var string The body string of the API response
+     */
+    protected $body = null;
+
+    /**
      * @var array The decoded body of the API response.
      */
     protected $decodedBody = null;
@@ -122,9 +127,13 @@ class TelegramResponse
      */
     public function getBody()
     {
-        $this->wait();
+        if (is_null($this->body)) {
+            $this->wait();
 
-        return $this->response->getBody()->getContents();
+            $this->body = (string) $this->response->getBody();
+        }
+
+        return $this->body;
     }
 
     /**
@@ -198,7 +207,7 @@ class TelegramResponse
     {
         $this->wait();
 
-        $this->decodedBody = json_decode($body = $this->response->getBody()->getContents(), true);
+        $this->decodedBody = json_decode($body = $this->getBody(), true);
 
         if ($this->decodedBody === null) {
             $this->decodedBody = [];
