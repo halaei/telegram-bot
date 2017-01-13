@@ -170,9 +170,12 @@ class ApiTest extends \PHPUnit_Framework_TestCase
             'description' => '',
             'result'      => '{}',
         ]));
+        $promise = new Promise(function () use ($response, &$promise) {
+            $promise->resolve($response);
+        });
         $client->shouldReceive('send')->once()
-            ->with("https://api.telegram.org/bottoken/sendMessage", "POST", \Mockery::any(), \Mockery::any(), 1, false, 1)
-            ->andReturn($response);
+            ->with('https://api.telegram.org/bottoken/sendMessage', \Mockery::any(), \Mockery::any(), 1, false, 1)
+            ->andReturn($promise);
         $this->api = new Api('token', false, $client);
 
         $this->api->setTimeOut(1);
@@ -531,6 +534,55 @@ class ApiTest extends \PHPUnit_Framework_TestCase
             $error = true;
         }
         $this->assertTrue($error);
+    }
+
+    public function test_on_fulfilled_is_called()
+    {
+        $api = Mocker::createApiResponse([
+            'url'                    => 'https://foo.com/bar',
+            'has_custom_certificate' => false,
+            'pending_update_count'   => 10,
+            'last_error_date'        => 100000,
+            'last_error_message'     => 'foobar',
+        ]);
+
+        $success = false;
+
+        $api->onFulfilled(function (TelegramResponse $response, $time) use (&$success) {
+            $this->assertFalse($response->isError());
+            $success = true;
+        });
+
+        $api->getWebhookInfo();
+
+        $this->assertTrue($success);
+    }
+
+    public function test_on_rejected_is_called()
+    {
+        $api = Mocker::setTelegramResponse([
+            'ok' => false,
+            'error_code' => 400,
+            'description' => 'Too Many Requests. Retry after 1000',
+            'parameters' => [
+                'retry_after' => 1000,
+            ],
+        ]);
+
+        $error = 0;
+
+        $api->onRejected(function (TelegramResponse $response, $time) use (&$error) {
+            $this->assertTrue($response->isError());
+            $error++;
+        });
+
+        try {
+            $api->sendMessage(['chat_id' => 1234, 'text' => 'text']);
+        } catch (TelegramResponseException $e) {
+            $error++;
+        }
+
+        $this->assertEquals(2, $error);
     }
 
     /**

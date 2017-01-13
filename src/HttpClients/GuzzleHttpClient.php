@@ -3,12 +3,9 @@
 namespace Telegram\Bot\HttpClients;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\RequestOptions;
-use Psr\Http\Message\ResponseInterface;
-use Telegram\Bot\Exceptions\TelegramSDKException;
 
 /**
  * Class GuzzleHttpClient.
@@ -23,11 +20,6 @@ class GuzzleHttpClient
     protected $client;
 
     /**
-     * @var PromiseInterface[]
-     */
-    protected $promises = [];
-
-    /**
      * @param Client|null $client
      */
     public function __construct(Client $client = null)
@@ -36,61 +28,20 @@ class GuzzleHttpClient
     }
 
     /**
-     * Wait for the responses of async requests.
-     */
-    public function __destruct()
-    {
-        $this->asyncWait();
-    }
-
-    /**
      * @param            $url
-     * @param            $method
      * @param array      $headers
      * @param array      $options
      * @param int        $timeOut
      * @param bool       $isAsyncRequest
      * @param int        $connectTimeOut
      *
-     * @throws TelegramSDKException
-     *
-     * @return PromiseInterface|ResponseInterface
+     * @return PromiseInterface
      */
-    public function send($url, $method, array $headers, array $options, $timeOut, $isAsyncRequest, $connectTimeOut)
+    public function send($url, array $headers, array $options, $timeOut, $isAsyncRequest, $connectTimeOut)
     {
         $body = isset($options['body']) ? $options['body'] : null;
         $options = $this->getOptions($headers, $body, $options, $timeOut, $isAsyncRequest, $connectTimeOut);
-
-        try {
-            $response = $this->client->requestAsync($method, $url, $options);
-
-            if ($isAsyncRequest) {
-                $this->promises[] = $response;
-            } else {
-                $response = $response->wait();
-            }
-        } catch (RequestException $e) {
-            $response = $e->getResponse();
-
-            if (!$response instanceof ResponseInterface) {
-                throw new TelegramSDKException($e->getMessage(), $e->getCode());
-            }
-        }
-
-        return $response;
-    }
-
-    /**
-     * Wait for the responses of async requests.
-     *
-     * @return array
-     */
-    public function asyncWait()
-    {
-        $results = Promise\inspect_all($this->promises);
-        $this->promises = [];
-
-        return $results;
+        return $this->client->requestAsync('POST', $url, $options);
     }
 
     /**

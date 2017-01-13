@@ -49,11 +49,18 @@ class TelegramResponseException extends TelegramSDKException
         $data = $response->getDecodedBody();
 
         if ( ! isset($data['ok']) || ($data['ok'] === true && ! isset($data['result']))) {
+            if ($response->getRequestException()) {
+                return new TelegramMalformedResponseException($response, $response->getBody(), $response->getHttpStatusCode(), $response->getRequestException());
+            }
             return new TelegramMalformedResponseException($response, $response->getBody(), $response->getHttpStatusCode());
         }
 
         $code = isset($data['error_code']) ? $data['error_code'] : -1;
         $message = isset($data['description']) ? $data['description'] : 'Unknown error from API.';
+
+        if ($response->getRequestException()) {
+            return new static($response, $message, $code, $response->getRequestException());
+        }
 
         return new static($response, $message, $code);
 

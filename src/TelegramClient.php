@@ -65,7 +65,6 @@ class TelegramClient
 
         return [
             $url,
-            $request->getMethod(),
             $request->getHeaders(),
             $request->isAsyncRequest(),
         ];
@@ -78,30 +77,18 @@ class TelegramClient
      *
      * @throws TelegramSDKException
      *
-     * @return TelegramResponse
+     * @return PromiseInterface
      */
     public function sendRequest(TelegramRequest $request)
     {
-        list($url, $method, $headers, $isAsyncRequest) = $this->prepareRequest($request);
+        list($url, $headers, $isAsyncRequest) = $this->prepareRequest($request);
 
         $timeOut = $request->getTimeOut();
         $connectTimeOut = $request->getConnectTimeOut();
 
-        if ($method === 'POST') {
-            $options = $request->getPostParams();
-        } else {
-            $options = ['query' => $request->getParams()];
-        }
+        $options = $request->getParams();
 
-        $rawResponse = $this->httpClientHandler->send($url, $method, $headers, $options, $timeOut, $isAsyncRequest, $connectTimeOut);
-
-        $returnResponse = $this->getResponse($request, $rawResponse);
-
-        if ($returnResponse->isError()) {
-            throw $returnResponse->getThrownException();
-        }
-
-        return $returnResponse;
+        return $this->httpClientHandler->send($url, $headers, $options, $timeOut, $isAsyncRequest, $connectTimeOut);
     }
 
     /**

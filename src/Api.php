@@ -57,6 +57,13 @@ class Api
     protected $isAsyncRequest = false;
 
     /**
+     * The array of waiting async responses.
+     *
+     * @var TelegramResponse[]
+     */
+    protected $waitingResponses = [];
+
+    /**
      * Timeout of the request in seconds.
      *
      * @var int
@@ -71,6 +78,20 @@ class Api
     protected $connectTimeOut = 10;
 
     /**
+     * The fulfillment handler to be called after each successful API call.
+     *
+     * @var null|Closure function(TelegramResponse $response, float $elapsedTime)
+     */
+    protected $onFulfilled;
+
+    /**
+     * The rejection handler to be called after each failed API call.
+     *
+     * @var null|Closure function(TelegramResponse $response, float $elapsedTime)
+     */
+    protected $onRejected;
+
+    /**
      * Instantiates a new Telegram super-class object.
      *
      *
@@ -83,10 +104,13 @@ class Api
      */
     public function __construct($token = null, $async = false, $httpClientHandler = null)
     {
-        $this->accessToken = isset($token) ? $token : getenv(static::BOT_TOKEN_ENV_NAME);
-        if (!$this->accessToken) {
+        $token = isset($token) ? $token : getenv(static::BOT_TOKEN_ENV_NAME);
+
+        if (!$token) {
             throw new TelegramSDKException('Required "token" not supplied in config and could not find fallback environment variable "'.static::BOT_TOKEN_ENV_NAME.'"');
         }
+
+        $this->setAccessToken($token);
 
         $this->client = new TelegramClient($httpClientHandler);
 
@@ -94,6 +118,15 @@ class Api
             $this->setAsyncRequest($async);
         }
     }
+
+    /**
+     * Wait for the responses of async requests and empty the waitingResponses array.
+     */
+    public function __destruct()
+    {
+        $this->asyncWait();
+    }
+
 
     /**
      * Returns the TelegramClient service.
@@ -132,7 +165,7 @@ class Api
      *
      * @throws \InvalidArgumentException
      *
-     * @return Api
+     * @return $this
      */
     public function setAccessToken($accessToken)
     {
@@ -146,11 +179,23 @@ class Api
     }
 
     /**
-     * Wait for the responses of async requests.
+     * Wait for the responses of async requests and empty the waitingResponses array.
+     *
+     * @return $this
      */
     public function asyncWait()
     {
-        $this->client->getHttpClientHandler()->asyncWait();
+        foreach ($this->waitingResponses as $response) {
+            try {
+                $response->wait();
+            } catch (\Exception $e) {
+                //
+            }
+        }
+
+        $this->waitingResponses = [];
+
+        return $this;
     }
 
     /**
@@ -158,7 +203,7 @@ class Api
      *
      * @param bool $isAsyncRequest
      *
-     * @return Api
+     * @return $this
      */
     public function setAsyncRequest($isAsyncRequest)
     {
@@ -193,9 +238,9 @@ class Api
     {
         $response = $this->post('getMe');
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new User($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -231,9 +276,9 @@ class Api
     {
         $response = $this->post('sendMessage', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -263,9 +308,9 @@ class Api
     {
         $response = $this->post('forwardMessage', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -500,9 +545,9 @@ class Api
     {
         $response = $this->post('sendGame', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -532,7 +577,7 @@ class Api
     {
         $response = $this->post('setGameScore', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             $body = $response->getDecodedBody();
 
             if ($body['result'] === true) {
@@ -540,7 +585,7 @@ class Api
             }
 
             return new Message($body);
-        });
+        }, $response);
     }
 
     /**
@@ -566,7 +611,7 @@ class Api
     {
         $response = $this->post('getGameHighScores', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             $body = $response->getDecodedBody();
 
             $scores = [];
@@ -576,7 +621,7 @@ class Api
             }
 
             return $scores;
-        });
+        }, $response);
     }
 
     /**
@@ -610,9 +655,9 @@ class Api
     {
         $response = $this->post('sendLocation', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -652,9 +697,9 @@ class Api
     {
         $response = $this->post('sendVenue', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -690,9 +735,9 @@ class Api
     {
         $response = $this->post('sendContact', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -732,9 +777,9 @@ class Api
         if (isset($params['action']) && in_array($params['action'], $validActions)) {
             $response = $this->post('sendChatAction', $params);
 
-            return $this->prepareResponse(function () use ($response) {
+            return $this->prepareResponse(function (TelegramResponse $response) {
                 return $response->getResult();
-            });
+            }, $response);
         }
 
         throw new TelegramSDKException('Invalid Action! Accepted value: '.implode(', ', $validActions));
@@ -765,9 +810,9 @@ class Api
     {
         $response = $this->post('getUserProfilePhotos', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new UserProfilePhotos($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -795,9 +840,9 @@ class Api
     {
         $response = $this->post('getFile', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new File($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -828,9 +873,9 @@ class Api
     {
         $response = $this->post('kickChatMember', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return $response->getResult();
-        });
+        }, $response);
     }
 
 	/**
@@ -854,9 +899,9 @@ class Api
     {
         $response = $this->post('leaveChat', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return $response->getResult();
-        });
+        }, $response);
     }
 
     /**
@@ -886,9 +931,9 @@ class Api
     {
         $response = $this->post('unbanChatMember', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return $response->getResult();
-        });
+        }, $response);
     }
 
     /**
@@ -920,9 +965,9 @@ class Api
     {
         $response = $this->post('answerCallbackQuery', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return $response->getResult();
-        });
+        }, $response);
     }
 
     /**
@@ -958,9 +1003,9 @@ class Api
     {
         $response = $this->post('editMessageText', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -992,9 +1037,9 @@ class Api
     {
         $response = $this->post('editMessageCaption', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -1024,9 +1069,9 @@ class Api
     {
         $response = $this->post('editMessageReplyMarkup', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -1066,9 +1111,9 @@ class Api
 
         $response = $this->post('answerInlineQuery', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return $response->getResult();
-        });
+        }, $response);
 
     }
 
@@ -1081,9 +1126,9 @@ class Api
     {
         $response = $this->post('getChat', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new Chat($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -1095,7 +1140,7 @@ class Api
     {
         $response = $this->post('getChatAdministrators', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             $members = [];
 
             foreach ($response->getResult() as $member) {
@@ -1103,7 +1148,7 @@ class Api
             }
 
             return $members;
-        });
+        }, $response);
     }
 
     /**
@@ -1115,9 +1160,9 @@ class Api
     {
         $response = $this->post('getChatMembersCount', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return $response->getResult();
-        });
+        }, $response);
     }
 
     /**
@@ -1129,9 +1174,9 @@ class Api
     {
         $response = $this->post('getChatMember', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new ChatMember($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -1144,9 +1189,9 @@ class Api
     {
         $response = $this->post('getWebhookInfo');
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return new WebhookInfo($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
@@ -1240,9 +1285,9 @@ class Api
     {
         $response = $this->post('deleteWebhook');
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             return $response->getResult();
-        });
+        }, $response);
     }
 
     /**
@@ -1269,7 +1314,7 @@ class Api
     {
         $response = $this->post('getUpdates', $params);
 
-        return $this->prepareResponse(function () use ($response) {
+        return $this->prepareResponse(function (TelegramResponse $response) {
             $updates = $response->getDecodedBody();
 
             $data = [];
@@ -1282,7 +1327,7 @@ class Api
             }
 
             return new Collection($data);
-        });
+        }, $response);
     }
 
     /**
@@ -1371,29 +1416,6 @@ class Api
     }
 
     /**
-     * Sends a GET request to Telegram Bot API and returns the result.
-     *
-     * @param string $endpoint
-     * @param array  $params
-     *
-     * @throws TelegramSDKException
-     *
-     * @return TelegramResponse
-     */
-    protected function get($endpoint, $params = [])
-    {
-        if (array_key_exists('reply_markup', $params)) {
-            $params['reply_markup'] = (string)$params['reply_markup'];
-        }
-
-        return $this->sendRequest(
-            'GET',
-            $endpoint,
-            $params
-        );
-    }
-
-    /**
      * Sends a POST request to Telegram Bot API and returns the result.
      *
      * @param string $endpoint
@@ -1415,11 +1437,7 @@ class Api
             $params = ['form_params' => $params];
         }
 
-        return $this->sendRequest(
-            'POST',
-            $endpoint,
-            $params
-        );
+        return $this->sendRequest($endpoint,$params);
     }
 
     /**
@@ -1463,19 +1481,18 @@ class Api
         $response = $this->post($endpoint, $multipart_params, true);
 
 
-        return $this->prepareResponse(function () use ($response, $endpoint) {
+        return $this->prepareResponse(function (TelegramResponse $response) use ($endpoint) {
             if ($endpoint == 'setWebhook') {
                 return $response->getResult();
             }
 
             return new Message($response->getDecodedBody());
-        });
+        }, $response);
     }
 
     /**
      * Sends a request to Telegram Bot API and returns the result.
      *
-     * @param string $method
      * @param string $endpoint
      * @param array  $params
      *
@@ -1483,33 +1500,43 @@ class Api
      *
      * @return TelegramResponse
      */
-    protected function sendRequest(
-        $method,
-        $endpoint,
-        array $params = []
-    ) {
-        $request = $this->request($method, $endpoint, $params);
+    protected function sendRequest($endpoint, array $params = [])
+    {
+        $request = $this->request($endpoint, $params);
 
-        return $this->lastResponse = $this->client->sendRequest($request);
+        $time = microtime(true);
+
+        $promise = $this->client->sendRequest($request);
+
+        $response = new TelegramResponse($request, $promise);
+
+        $handler = function () use ($response, $time) {
+            $elapsedTime = microtime(true) - $time;
+
+            if ($response->isError()) {
+                $this->rejected($response, $elapsedTime);
+            } else {
+                $this->fulfilled($response, $elapsedTime);
+            }
+        };
+
+        $promise->then($handler, $handler);
+
+        return $response;
     }
 
     /**
      * Instantiates a new TelegramRequest entity.
      *
-     * @param string $method
      * @param string $endpoint
      * @param array  $params
      *
      * @return TelegramRequest
      */
-    protected function request(
-        $method,
-        $endpoint,
-        array $params = []
-    ) {
+    protected function request($endpoint, array $params = [])
+    {
         return new TelegramRequest(
             $this->getAccessToken(),
-            $method,
             $endpoint,
             $params,
             $this->isAsyncRequest(),
@@ -1519,19 +1546,29 @@ class Api
     }
 
     /**
-     * Send the Closure $response if Api is in async mode, otherwise send the return value of the Closure $response.
+     * Send the Closure $parser if Api is in async mode, otherwise send the return value of the Closure $parser.
      *
-     * @param Closure $response
+     * @param Closure $parser
+     * @param TelegramResponse $response
+     *
+     * @throws TelegramSDKException
      *
      * @return Closure|mixed
      */
-    protected function prepareResponse(Closure $response)
+    protected function prepareResponse(Closure $parser, TelegramResponse $response)
     {
+        $prepared = function () use ($parser, $response) {
+            $response->wait()->throwException();
+            return $parser($response);
+        };
+
         if ($this->isAsyncRequest()) {
-            return $response;
+            $this->waitingResponses[] = $response;
+
+            return $prepared;
         }
 
-        return $response();
+        return $prepared();
     }
 
     /**
@@ -1600,5 +1637,62 @@ class Api
         $this->connectTimeOut = $connectTimeOut;
 
         return $this;
+    }
+
+    /**
+     * Clear or set a fulfillment handler on the subsequent API requests.
+     *
+     * <code>
+     * $api->onFulfilled(function (TelegramResponse $response, $elapsedTime) {
+     *     //Profile the api delay
+     *     //...
+     * })
+     * </code>
+     *
+     * @param null|Closure $onFulfilled function(TelegramResponse $response, float $elapsedTime)
+     */
+    public function onFulfilled(Closure $onFulfilled = null)
+    {
+        $this->onFulfilled = $onFulfilled;
+    }
+
+    /**
+     * Clear or set a rejection handler on the subsequent API requests.
+     *
+     * <code>
+     * $api->onRejected(function (TelegramResponse $response, $elapsedTime) {
+     *     //Profile the api delay
+     *     //Log the API exception
+     *     //...
+     * })
+     * </code>
+     *
+     * @param null|Closure $onRejected function(TelegramResponse $response, float $elapsedTime)
+     */
+    public function onRejected(Closure $onRejected = null)
+    {
+        $this->onRejected = $onRejected;
+    }
+
+    /**
+     * @param TelegramResponse $request
+     * @param float            $elapsedTime
+     */
+    protected function fulfilled(TelegramResponse $request, $elapsedTime)
+    {
+        if (is_callable($this->onFulfilled)) {
+            call_user_func_array($this->onFulfilled, [$request, $elapsedTime]);
+        }
+    }
+
+    /**
+     * @param TelegramResponse $request
+     * @param float            $elapsedTime
+     */
+    protected function rejected(TelegramResponse $request, $elapsedTime)
+    {
+        if (is_callable($this->onRejected)) {
+            call_user_func_array($this->onRejected, [$request, $elapsedTime]);
+        }
     }
 }
