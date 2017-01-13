@@ -181,7 +181,7 @@ class Api
     /**
      * Wait for the responses of async requests and empty the waitingResponses array.
      *
-     * @return $this
+     * @return TelegramResponse[]
      */
     public function asyncWait()
     {
@@ -193,9 +193,11 @@ class Api
             }
         }
 
+        $waiting = $this->waitingResponses;
+
         $this->waitingResponses = [];
 
-        return $this;
+        return $waiting;
     }
 
     /**
@@ -1495,8 +1497,6 @@ class Api
      *
      * @param string $endpoint
      * @param array  $params
-     *
-     * @throws TelegramSDKException
      *
      * @return TelegramResponse
      */
