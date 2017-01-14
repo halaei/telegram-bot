@@ -1650,10 +1650,14 @@ class Api
      * </code>
      *
      * @param null|Closure $onFulfilled function(TelegramResponse $response, float $elapsedTime)
+     *
+     * @return $this
      */
     public function onFulfilled(Closure $onFulfilled = null)
     {
         $this->onFulfilled = $onFulfilled;
+
+        return $this;
     }
 
     /**
@@ -1668,10 +1672,14 @@ class Api
      * </code>
      *
      * @param null|Closure $onRejected function(TelegramResponse $response, float $elapsedTime)
+     *
+     * @return $this
      */
     public function onRejected(Closure $onRejected = null)
     {
         $this->onRejected = $onRejected;
+
+        return $this;
     }
 
     /**
