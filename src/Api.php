@@ -185,17 +185,17 @@ class Api
      */
     public function asyncWait()
     {
-        foreach ($this->waitingResponses as $response) {
+        $waiting = $this->waitingResponses;
+
+        $this->waitingResponses = [];
+
+        foreach ($waiting as $response) {
             try {
                 $response->wait();
             } catch (\Exception $e) {
                 //
             }
         }
-
-        $waiting = $this->waitingResponses;
-
-        $this->waitingResponses = [];
 
         return $waiting;
     }
