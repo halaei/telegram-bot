@@ -142,11 +142,12 @@ class Message extends BaseObject
         $curOffset = 0;
         $curLen = 0;
         foreach ($array as $char) {
+            $utf16 = mb_convert_encoding($char, 'UTF-16');
             if ($curOffset >= $start && $curLen < $length) {
                 $result .= $char;
-                $curLen += strlen($char) > 2 ? 2 : 1;
+                $curLen += strlen($utf16) > 2 ? 2 : 1;
             }
-            $curOffset += strlen($char) > 2 ? 2 : 1;
+            $curOffset += strlen($utf16) > 2 ? 2 : 1;
             if ($curLen >= $length) {
                 break;
             }
