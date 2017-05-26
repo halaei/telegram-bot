@@ -228,6 +228,10 @@ class Api
         return $this->isAsyncRequest;
     }
 
+    /*
+     * Api Methods
+     */
+
     /**
      * A simple method for testing your bot's auth token.
      * Returns basic information about the bot in form of a User object.
@@ -244,6 +248,10 @@ class Api
             return new User($response->getDecodedBody());
         }, $response);
     }
+
+    /*
+     * Chat & Messaging Methods
+     */
 
     /**
      * Send text messages.
@@ -558,6 +566,10 @@ class Api
         return $this->uploadFile('sendVideoNote', $params, ['video_note']);
     }
 
+    /*
+     * Game Methods.
+     */
+
     /**
      * Send game.
      *
@@ -659,6 +671,80 @@ class Api
             return $scores;
         }, $response);
     }
+
+    /*
+     * Payment Methods
+     */
+
+    /**
+     * Send invoice.
+     *
+     * Your bot can accept payments from Telegram users.
+     * Please see the introduction to payments for more details on the process and how to set up payments for your bot.
+     * Please note that users will need Telegram v.4.0 or higher to use payments (released on May 18, 2017).
+     *
+     * @link https://core.telegram.org/bots/api#sendinvoice
+     *
+     * @param array $params
+     *
+     * @return Message|Closure
+     */
+    public function sendInvoice(array $params)
+    {
+        $response = $this->post('sendInvoice', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return new Message($response->getDecodedBody());
+        }, $response);
+    }
+
+    /**
+     * Reply to shipping queries.
+     *
+     * If you sent an invoice requesting a shipping address and the parameter is_flexible was specified,
+     * the Bot API will send an Update with a shipping_query field to the bot.
+     *
+     * @link https://core.telegram.org/bots/api#answershippingquery
+     *
+     * @param array $params
+     *
+     * @return true|Closure
+     */
+    public function answerShippingQuery(array $params)
+    {
+        $response = $this->post('answerShippingQuery', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getRequest();
+        }, $response);
+    }
+
+    /**
+     * Respond to pre-checkout queries.
+     *
+     * Once the user has confirmed their payment and shipping details,
+     * the Bot API sends the final confirmation in the form of an Update with the field pre_checkout_query.
+     * Use this method to respond to such pre-checkout queries.
+     * Note: The Bot API must receive an answer within 10 seconds after the pre-checkout query was sent.
+     *
+     * @link https://core.telegram.org/bots/api#answerprecheckoutquery
+     *
+     * @param array $params
+     *
+     * @return true|Closure
+     */
+    public function answerPreCheckoutQuery(array $params)
+    {
+        $response = $this->post('answerPreCheckoutQuery', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getRequest();
+        }, $response);
+    }
+
+    /*
+     * Chat & Messaging Methods
+     */
 
     /**
      * Send point on the map.
@@ -823,6 +909,10 @@ class Api
         throw new TelegramSDKException('Invalid Action! Accepted value: '.implode(', ', $validActions));
     }
 
+    /*
+     * Administration Methods
+     */
+
     /**
      * Returns a list of profile pictures for a user.
      *
@@ -974,6 +1064,10 @@ class Api
         }, $response);
     }
 
+    /*
+     * Callback Query Methods
+     */
+
     /**
      * Send answers to callback queries sent from inline keyboards.
      *
@@ -1007,6 +1101,10 @@ class Api
             return $response->getResult();
         }, $response);
     }
+
+    /*
+     * Edit Methods
+     */
 
     /**
      * Edit text messages sent by the bot or via the bot (for inline bots).
@@ -1146,6 +1244,10 @@ class Api
         }, $response);
     }
 
+    /*
+     * Inline Mode Methods
+     */
+
     /**
      * Use this method to send answers to an inline query.
      *
@@ -1186,8 +1288,11 @@ class Api
         return $this->prepareResponse(function (TelegramResponse $response) {
             return $response->getResult();
         }, $response);
-
     }
+
+    /*
+     * Administration Methods
+     */
 
     /**
      * @param array $params
@@ -1251,6 +1356,9 @@ class Api
         }, $response);
     }
 
+    /*
+     * Update & Webhook Methods
+     */
     /**
      * Use this method to get current webhook status. Requires no parameters.
      * On success, returns a WebhookInfo object. If the bot is using getUpdates, will return an object with the url field empty.

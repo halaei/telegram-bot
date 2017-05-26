@@ -14,6 +14,8 @@ namespace Telegram\Bot\Objects;
  * @method InlineQuery          getInlineQuery()            (Optional). New incoming inline query.
  * @method ChosenInlineResult   getChosenInlineResult()     (Optional). A result of an inline query that was chosen by the user and sent to their chat partner.
  * @method CallbackQuery        getCallbackQuery()          (Optional). Incoming callback query.
+ * @method ShippingQuery        getShippingQuery()          (Optional). New incoming shipping query. Only for invoices with flexible price.
+ * @method PreCheckOutQuery     getPreCheckOutQuery()       (Optional). New incoming pre-checkout query. Contains full information about checkout.
  *
  * @link https://core.telegram.org/bots/api#update
  */
@@ -32,6 +34,8 @@ class Update extends BaseObject
             'inline_query'         => InlineQuery::class,
             'chosen_inline_result' => ChosenInlineResult::class,
             'callback_query'       => CallbackQuery::class,
+            'shipping_query'       => ShippingQuery::class,
+            'pre_checkout_query'   => PreCheckOutQuery::class,
         ];
     }
 
@@ -66,6 +70,8 @@ class Update extends BaseObject
             'inline_query',
             'chosen_inline_result',
             'callback_query',
+            'shipping_query',
+            'pre_checkout_query',
         ];
 
         return $this->keys()
@@ -140,6 +146,8 @@ class Update extends BaseObject
             return $this->getChannelPost()->getFrom();
         } elseif ($this->has('edited_channel_post')) {
             return $this->getEditedChannelPost()->getFrom();
+        } elseif ($this->has('shipping_query')) {
+            return $this->getShippingQuery()->getFrom();
         }
         return null;
     }
