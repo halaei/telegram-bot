@@ -496,6 +496,12 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('administrator', $admins[1]->getStatus());
     }
 
+    public function test_delete_message()
+    {
+        $api = Mocker::createApiResponse(true);
+        $this->assertTrue($api->deleteMessage(['chat_id' => 123, 'message_id' => 456]));
+    }
+
     public function test_get_webhook_info()
     {
         $api = Mocker::createApiResponse([

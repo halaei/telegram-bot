@@ -943,9 +943,9 @@ class Api
     }
 
     /**
-     * Unban a previously kicked user in a supergroup.
+     * Unban a previously kicked user in a supergroup or channel.
      *
-     * The user will not return to the group automatically, but will be able to join via link, etc.
+     * The user will not return to the group or channel automatically, but will be able to join via link, etc.
      *
      * The bot must be an administrator in the group for this to work.
      *
@@ -1109,6 +1109,40 @@ class Api
 
         return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
+        }, $response);
+    }
+
+    /**
+     * Delete a message.
+     *
+     * A message can only be deleted if it was sent less than 48 hours ago.
+     * Any such recently sent outgoing message may be deleted.
+     * Additionally, if the bot is an administrator in a group chat, it can delete any message.
+     * If the bot is an administrator in a supergroup, it can delete messages from any other user and service messages
+     * about people joining or leaving the group (other types of service messages may only be removed by the group creator).
+     * In channels, bots can only remove their own messages. Returns True on success.
+     *
+     * <code>
+     * $params = [
+     *    'chat_id' => '',
+     *    'message_id' => '',
+     * ];
+     * </code>
+     * @link https://core.telegram.org/bots/api#editMessageReplyMarkup
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var int        $params ['message_id']
+     *
+     * @return true|Closure
+     */
+    public function deleteMessage(array $params)
+    {
+        $response = $this->post('deleteMessage', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
         }, $response);
     }
 
