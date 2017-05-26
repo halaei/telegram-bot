@@ -1,5 +1,8 @@
 <?php
+
 namespace Telegram\Bot\Keyboard;
+
+use Telegram\Bot\Objects\CallbackGame;
 
 /**
  * Class Keyboard
@@ -127,6 +130,9 @@ class Keyboard extends Base
      *   'url'                  => '',
      *   'callback_data'        => '',
      *   'switch_inline_query'  => '',
+     *   'switch_inline_query_current_chat' => '',
+     *   'callback_game'        => '',
+     *   'pay'                  => '',
      * ];
      * </code>
      *
@@ -138,6 +144,9 @@ class Keyboard extends Base
      * @var string         $params ['url']
      * @var string         $params ['callback_data']
      * @var string         $params ['switch_inline_query']
+     * @var string         $params ['switch_inline_query_current_chat']
+     * @var CallbackGame   $params ['callback_game']
+     * @var bool           $params['pay']
      *
      * @return string
      */

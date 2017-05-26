@@ -24,10 +24,11 @@ namespace Telegram\Bot\Objects;
  * @method Video            getVideo()                  (Optional). Message is a video, information about the video.
  * @method Voice            getVoice()                  (Optional). Message is a voice message, information about the file.
  * @method VideoNote        getVideoNote()              (Optional). Message is a video note, information about the video message.
+ * @method User[]           getNewChatMembers()         (Optional). New members that were added to the group or supergroup and information about them (the bot itself may be one of these members).
  * @method Contact          getContact()                (Optional). Message is a shared contact, information about the contact.
  * @method Location         getLocation()               (Optional). Message is a shared location, information about the location.
  * @method Venue            getVenue()                  (Optional). Message is a venue, information about the venue.
- * @method User             getNewChatMember()          (Optional). A new member was added to the group, information about them (this member may be the bot itself).
+ * @method User             getNewChatMember()          (deprecated. Replaced with new_chat_members)(Optional). A new member was added to the group, information about them (this member may be the bot itself).
  * @method User             getLeftChatMember()         (Optional). A member was removed from the group, information about them (this member may be the bot itself).
  * @method string           getNewChatTitle()           (Optional). A chat title was changed to this value.
  * @method PhotoSize[]      getNewChatPhoto()           (Optional). A chat photo was change to this value.
@@ -64,6 +65,7 @@ class Message extends BaseObject
             'contact'          => Contact::class,
             'location'         => Location::class,
             'venue'            => Venue::class,
+            'new_chat_members' => User::class,
             'new_chat_member'  => User::class,
             'left_chat_member' => User::class,
             'new_chat_photo'   => PhotoSize::class,
