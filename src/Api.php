@@ -525,6 +525,40 @@ class Api
     }
 
     /**
+     * Send video messages.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'              => '',
+     *   'video_note'           => '',
+     *   'duration'             => '',
+     *   'length'               => '',
+     *   'disable_notification' => '',
+     *   'reply_to_message_id'  => '',
+     *   'reply_markup'         => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#sendvideonote
+     *
+     * @param array    $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var string     $params ['video_note']
+     * @var int        $params ['duration']
+     * @var int        $params ['length']
+     * @var bool       $params ['disable_notification']
+     * @var int        $params ['reply_to_message_id']
+     * @var string     $params ['reply_markup']
+     *
+     * @return Message|Closure
+     */
+    public function sendVideoNote(array $params)
+    {
+        return $this->uploadFile('sendVideoNote', $params, ['video_note']);
+    }
+
+    /**
      * Send game.
      *
      * <code>
@@ -774,6 +808,8 @@ class Api
             'upload_audio',
             'upload_document',
             'find_location',
+            'record_video_note',
+            'upload_video_note',
         ];
 
         if (isset($params['action']) && in_array($params['action'], $validActions)) {

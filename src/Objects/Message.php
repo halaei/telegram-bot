@@ -23,6 +23,7 @@ namespace Telegram\Bot\Objects;
  * @method Sticker          getSticker()                (Optional). Message is a sticker, information about the sticker.
  * @method Video            getVideo()                  (Optional). Message is a video, information about the video.
  * @method Voice            getVoice()                  (Optional). Message is a voice message, information about the file.
+ * @method VideoNote        getVideoNote()              (Optional). Message is a video note, information about the video message.
  * @method Contact          getContact()                (Optional). Message is a shared contact, information about the contact.
  * @method Location         getLocation()               (Optional). Message is a shared location, information about the location.
  * @method Venue            getVenue()                  (Optional). Message is a venue, information about the venue.
@@ -59,6 +60,7 @@ class Message extends BaseObject
             'sticker'          => Sticker::class,
             'video'            => Video::class,
             'voice'            => Voice::class,
+            'video_note'       => VideoNote::class,
             'contact'          => Contact::class,
             'location'         => Location::class,
             'venue'            => Venue::class,
@@ -224,6 +226,8 @@ class Message extends BaseObject
             return $this->getVideo()->getFileId();
         } elseif ($this->getVoice()) {
             return $this->getVoice()->getFileId();
+        } elseif ($this->getVideoNote()) {
+            return $this->getVideoNote()->getFileId();
         }
     }
 
@@ -242,6 +246,7 @@ class Message extends BaseObject
             'sticker',
             'video',
             'voice',
+            'video_note',
             'contact',
             'location',
             'venue',
