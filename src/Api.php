@@ -13,7 +13,9 @@ use Telegram\Bot\Objects\Chat;
 use Telegram\Bot\Objects\ChatMember;
 use Telegram\Bot\Objects\File;
 use Telegram\Bot\Objects\GameHighScore;
+use Telegram\Bot\Objects\MaskPosition;
 use Telegram\Bot\Objects\Message;
+use Telegram\Bot\Objects\StickerSet;
 use Telegram\Bot\Objects\UnknownObject;
 use Telegram\Bot\Objects\Update;
 use Telegram\Bot\Objects\User;
@@ -458,6 +460,134 @@ class Api
         }
 
         return $this->uploadFile('sendSticker', $params, ['sticker']);
+    }
+
+    /**
+     * Get a sticker set.
+     *
+     * @link https://core.telegram.org/bots/api#getstickerset
+     *
+     * @param array $params
+     *
+     * @var string $params['name'] Short name of the sticker set that is used in t.me/addstickers/ URLs (e.g., animals).
+     *
+     * @return StickerSet|Closure
+     */
+    public function getStickerSet(array $params)
+    {
+        $response = $this->post('getStickerSet', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return new StickerSet($response->getDecodedBody());
+        }, $response);
+    }
+
+    /**
+     * Upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet methods (can be used multiple times).
+     *
+     * @link https://core.telegram.org/bots/api#uploadstickerfile
+     *
+     * @param array $params
+     *
+     * @var int    $params['user_id']
+     * @var string $params['png_sticker']
+     *
+     * @return File|Closure
+     */
+    public function uploadStickerFile(array $params)
+    {
+        $response = $this->post('uploadStickerFile', $params, ['png_sticker']);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return new File($response->getDecodedBody());
+        }, $response);
+    }
+
+    /**
+     * @link https://core.telegram.org/bots/api#createnewstickerset
+     *
+     * @param array $params
+     *
+     * @var int             $params['user_id']
+     * @var string          $params['name']
+     * @var string          $params['title']
+     * @var InputFile       $params['png_sticker']
+     * @var string          $params['emojis']
+     * @var bool            $params['is_masks']
+     * @var MaskPosition    $params['mask_position']
+     *
+     * @return true|Closure
+     */
+    public function createNewStickerSet(array $params)
+    {
+        $response = $this->post('createNewStickerSet', $params, ['png_sticker']);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Add a new sticker to a set created by the bot.
+     *
+     * @link https://core.telegram.org/bots/api#addstickertoset
+     *
+     * @param array $params
+     *
+     * @var int $params['user_id']
+     * @var int $params['name']
+     * @var int $params['png_sticker']
+     * @var int $params['emojis']
+     * @var int $params['mask_position']
+     *
+     * @return true|Closure
+     */
+    public function addStickerToSet(array $params)
+    {
+        $response = $this->post('addStickerToSet', $params, ['png_sticker']);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Move a sticker in a set created by the bot to a specific position.
+     *
+     * @link https://core.telegram.org/bots/api#setstickerpositioninset
+     *
+     * @param array $params
+     *
+     * @var string $params['sticker']
+     * @var string $params['position']
+     *
+     * @return true|Closure
+     */
+    public function setStickerPositionInSet(array $params)
+    {
+        $response = $this->post('setStickerPositionInSet', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * @link https://core.telegram.org/bots/api#deletestickerfromset
+     *
+     * @param array $params
+     *
+     * @var string $params['sticker']
+     *
+     * @return true|Closure
+     */
+    public function deleteStickerFromSet(array $params)
+    {
+        $response = $this->post('deleteStickerFromSet', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
     }
 
     /**
@@ -1868,7 +1998,7 @@ class Api
             $params = ['form_params' => $params];
         }
 
-        return $this->sendRequest($endpoint,$params);
+        return $this->sendRequest($endpoint, $params);
     }
 
     /**
