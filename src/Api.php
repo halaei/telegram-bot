@@ -985,6 +985,7 @@ class Api
      * $params = [
      *   'chat_id'              => '',
      *   'user_id'              => '',
+     *   'until_date'           => '',
      * ];
      * </code>
      *
@@ -994,6 +995,7 @@ class Api
      *
      * @var int|string $params ['chat_id']
      * @var int        $params ['user_id']
+     * @var int        $params ['until_date']
      *
      * @return true|Closure
      */
@@ -1058,6 +1060,255 @@ class Api
     public function unbanChatMember(array $params)
     {
         $response = $this->post('unbanChatMember', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Restrict a user in a supergroup.
+     *
+     * The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights.
+     *
+     * Pass True for all boolean parameters to lift restrictions from a user.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'                   => '',
+     *   'user_id'                   => '',
+     *   'until_date'                => '',
+     *   'can_send_messages'         => '',
+     *   'can_send_media_messages'   => '',
+     *   'can_send_other_messages'   => '',
+     *   'can_add_web_page_previews' => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#restrictchatmember
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var int        $params ['user_id']
+     * @var int        $params ['until_date']
+     * @var bool       $param ['can_send_messages']
+     * @var bool       $param ['can_send_media_messages']
+     * @var bool       $param ['can_send_other_messages']
+     * @var bool       $param ['can_add_web_page_previews']
+     *
+     * @return true|Closure
+     */
+    public function restrictChatMember(array $params)
+    {
+        $response = $this->post('restrictChatMember', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * promote or demote a user in a supergroup or a channel.
+     *
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     *
+     * Pass False for all boolean parameters to demote a user.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'                   => '',
+     *   'user_id'                   => '',
+     *   'can_change_info'                => '',
+     *   'can_post_messages'         => '',
+     *   'can_edit_messages'   => '',
+     *   'can_delete_messages'   => '',
+     *   'can_invite_users' => '',
+     *   'can_restrict_members' => '',
+     *   'can_pin_messages' => '',
+     *   'can_promote_members' => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#promotechatmember
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var int        $params ['user_id']
+     * @var bool       $can_change_info
+     * @var bool       $can_post_messages
+     * @var bool       $can_edit_messages
+     * @var bool       $can_delete_messages
+     * @var bool       $can_invite_users
+     * @var bool       $can_restrict_members
+     * @var bool       $can_pin_messages
+     * @var bool       $can_promote_members
+     *
+     * @return true|Closure
+     */
+    public function promoteChatMember(array $params)
+    {
+        $response = $this->post('promoteChatMember', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Export an invite link to a supergroup or a channel.
+     *
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     *
+     * @link https://core.telegram.org/bots/api#exportchatinvitelink
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     *
+     * @return Closure|string
+     */
+    public function exportChatInviteLink(array $params)
+    {
+        $response = $this->post('exportChatInviteLink', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Set a new profile photo for the chat. Photos can't be changed for private chats.
+     *
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     *
+     * @link https://core.telegram.org/bots/api#setchatphoto
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var string     $params ['photo']
+     *
+     * @return Closure|true
+     */
+    public function setChatPhoto(array $params)
+    {
+        $response = $this->post('setChatPhoto', $params, ['photo']);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Delete a chat photo. Photos can't be changed for private chats.
+     *
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     *
+     * @link https://core.telegram.org/bots/api#deletechatphoto
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     *
+     * @return Closure|true
+     */
+    public function deleteChatPhoto(array $params)
+    {
+        $response = $this->post('deleteChatPhoto', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Change the title of a chat. Titles can't be changed for private chats.
+     *
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     *
+     * @link https://core.telegram.org/bots/api#setchattitle
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var string     $params ['title']
+     *
+     * @return Closure|true
+     */
+    public function setChatTitle(array $params)
+    {
+        $response = $this->post('setChatTitle', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Change the description of a supergroup or a channel.
+     *
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     *
+     * @link https://core.telegram.org/bots/api#setchatdescription
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var string     $params ['description']
+     *
+     * @return Closure|true
+     */
+    public function setChatDescription(array $params)
+    {
+        $response = $this->post('setChatDescription', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Pin a message in a supergroup.
+     *
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     *
+     * @link https://core.telegram.org/bots/api#pinchatmessage
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var int        $params ['message_id']
+     * @var bool       $params ['disable_notification']
+     *
+     * @return Closure|true
+     */
+    public function pinChatMessage(array $params)
+    {
+        $response = $this->post('pinChatMessage', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
+        }, $response);
+    }
+
+    /**
+     * Unpin a message in a supergroup chat.
+     *
+     * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+     *
+     * @link https://core.telegram.org/bots/api#unpinchatmessage
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     *
+     * @return Closure|mixed
+     */
+    public function unpinChatMessage(array $params)
+    {
+        $response = $this->post('unpinChatMessage', $params);
 
         return $this->prepareResponse(function (TelegramResponse $response) {
             return $response->getResult();
