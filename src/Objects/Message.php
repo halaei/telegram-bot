@@ -13,8 +13,10 @@ namespace Telegram\Bot\Objects;
  * @method User               getForwardFrom()            (Optional). For forwarded messages, sender of the original message.
  * @method Chat               getForwardFromChat()        (Optional). For messages forwarded from a channel, information about the original channel.
  * @method int                getForwardFromMessageId()   (Optional). For forwarded channel posts, identifier of the original message in the channel.
+ * @method string             getForwardSignature()       (Optional). For messages forwarded from channels, signature of the post author if present.
  * @method int                getForwardDate()            (Optional). For forwarded messages, date the original message was sent in Unix time.
  * @method Message            getReplyToMessage()         (Optional). For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
+ * @method string             getAuthorSignature()        (Optional). Signature of the post author for messages in channels.
  * @method MessageEntity[]    getEntities()               (Optional). For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text.
  * @method Audio              getAudio()                  (Optional). Message is an audio file, information about the file.
  * @method Document           getDocument()               (Optional). Message is a general file, information about the file.
@@ -201,6 +203,9 @@ class Message extends BaseObject
                 $html .= '<pre>'.e($this->getEntityText($entity)).'</pre>';
             } elseif ($entity->getType() === 'text_link') {
                 $url = $entity->getUrl();
+                $html .= "<a href=\"$url\">".e($this->getEntityText($entity)).'</a>';
+            } elseif ($entity->getType() === 'text_mention') {
+                $url = 'tg://user?id='.$entity->getUser()->getId();
                 $html .= "<a href=\"$url\">".e($this->getEntityText($entity)).'</a>';
             } else {
                 $html .= e($this->getEntityText($entity));

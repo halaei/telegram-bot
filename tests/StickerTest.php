@@ -1,5 +1,7 @@
 <?php
 
+namespace Telegram\Bot\Tests;
+
 use Telegram\Bot\Objects\MaskPosition;
 use Telegram\Bot\Objects\Sticker;
 use Telegram\Bot\Objects\StickerSet;

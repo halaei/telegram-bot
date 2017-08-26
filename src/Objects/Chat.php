@@ -16,6 +16,7 @@ namespace Telegram\Bot\Objects;
  * @method ChatPhoto getPhoto()                        (Optional). Chat photo. Returned only in getChat.
  * @method string    getDescription()                  (Optional). Description, for supergroups and channel chats. Returned only in getChat.
  * @method string    getInviteLink()                   (Optional). Chat invite link, for supergroups and channel chats. Returned only in getChat.
+ * @method Message   getPinnedMessage()                (Optional). Pinned message, for supergroups. Returned only in getChat.
  */
 class Chat extends BaseObject
 {
@@ -26,6 +27,7 @@ class Chat extends BaseObject
     {
         return [
             'photo' => ChatPhoto::class,
+            'pinned_message' => Message::class,
         ];
     }
 
