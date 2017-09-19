@@ -3,6 +3,7 @@
 namespace Telegram\Bot\Tests;
 
 use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Response;
 use Telegram\Bot\Api;
 use InvalidArgumentException;
@@ -545,6 +546,48 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('creator', $admins[0]->getStatus());
         $this->assertInstanceOf(ChatMember::class, $admins[1]);
         $this->assertEquals('administrator', $admins[1]->getStatus());
+    }
+
+
+    /** @test */
+    public function it_accept_access_token_via_params_when_posting_form_params()
+    {
+        $handler = \Mockery::mock(GuzzleHttpClient::class);
+        $api = new Api('default_token', true, $handler);
+
+        $promise = \Mockery::mock(PromiseInterface::class);
+        $promise->shouldReceive('then');
+
+        //send($url, array $headers, array $options, $timeOut, $isAsyncRequest, $connectTimeOut)
+        $handler->shouldReceive('send')->once()->with(
+            'https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11/sendMessage',
+            \Mockery::any(), \Mockery::any(), \Mockery::any(), true, \Mockery::any())->andReturn($promise);
+
+        $api->sendMessage([
+            '_AccessToken_' => '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11',
+            'chat_id'       => 12341234,
+            'text'          => 'test',
+        ]);
+    }
+
+    /** @test */
+    public function it_accept_access_token_via_params_when_posting_multipart()
+    {
+        $handler = \Mockery::mock(GuzzleHttpClient::class);
+        $api = new Api('default_token', true, $handler);
+
+        $promise = \Mockery::mock(PromiseInterface::class);
+        $promise->shouldReceive('then');
+
+        //send($url, array $headers, array $options, $timeOut, $isAsyncRequest, $connectTimeOut)
+        $handler->shouldReceive('send')->once()->with(
+            'https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11/sendAudio',
+            \Mockery::any(), \Mockery::any(), \Mockery::any(), true, \Mockery::any())->andReturn($promise);
+        $api->sendAudio([
+            '_AccessToken_' => '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11',
+            'chat_id'       => 12341234,
+            'audio'         => '12341234',
+        ]);
     }
 
     public function test_delete_message()
