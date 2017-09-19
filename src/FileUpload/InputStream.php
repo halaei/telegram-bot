@@ -21,6 +21,6 @@ class InputStream extends InputFile
 
     protected function prepareUri($uri)
     {
-        return is_null($uri) ? Str::quickRandom() : $uri;
+        return is_null($uri) ? Str::random() : $uri;
     }
 }
