@@ -404,6 +404,57 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($fileId, $response->getFileId());
     }
 
+    /** @test */
+    public function it_returns_true_if_setChatPhoto_is_sent()
+    {
+        $fileId = md5('file_id');
+        $this->api = Mocker::createApiResponse(true);
+
+        $response = $this->api->setChatPhoto(['chat_id' => -123123, 'photo' => $fileId]);
+
+        $this->assertTrue($response);
+    }
+
+    /** @test */
+    public function it_returns_true_if_createNewStickerSet_is_sent()
+    {
+        $fileId = md5('file_id');
+        $this->api = Mocker::createApiResponse(true);
+
+        $response = $this->api->createNewStickerSet(['user_id' => 123123, 'png_sticker' => $fileId]);
+
+        $this->assertTrue($response);
+    }
+
+    /** @test */
+    public function it_returns_true_if_addStickerToSet_is_sent()
+    {
+        $fileId = md5('file_id');
+        $this->api = Mocker::createApiResponse(true);
+
+        $response = $this->api->addStickerToSet(['user_id' => 123123, 'png_sticker' => $fileId]);
+
+        $this->assertTrue($response);
+    }
+
+    /** @test */
+    public function it_returns_a_file_object_if_uploadStickerFile_is_sent()
+    {
+        $fileId = md5('file_id');
+        $this->api = Mocker::createApiResponse(
+            [
+                'file_id'   => $fileId,
+                'file_size' => '',
+                'file_path' => '',
+            ]
+        );
+
+        $response = $this->api->uploadStickerFile(['user_id' => 123123, 'png_sticker' => $fileId]);
+
+        $this->assertInstanceOf(File::class, $response);
+        $this->assertEquals($fileId, $response->getFileId());
+    }
+
     /**
      * @test
      * @expectedException \Telegram\Bot\Exceptions\TelegramSDKException

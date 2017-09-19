@@ -496,11 +496,11 @@ class Api
      */
     public function uploadStickerFile(array $params)
     {
-        $response = $this->post('uploadStickerFile', $params, ['png_sticker']);
-
-        return $this->prepareResponse(function (TelegramResponse $response) {
+        $parser = function (TelegramResponse $response) {
             return new File($response->getDecodedBody());
-        }, $response);
+        };
+
+        return $this->uploadFile('uploadStickerFile', $params, ['png_sticker'], $parser);
     }
 
     /**
@@ -520,11 +520,11 @@ class Api
      */
     public function createNewStickerSet(array $params)
     {
-        $response = $this->post('createNewStickerSet', $params, ['png_sticker']);
-
-        return $this->prepareResponse(function (TelegramResponse $response) {
+        $parser = function (TelegramResponse $response) {
             return $response->getResult();
-        }, $response);
+        };
+
+        return $this->uploadFile('createNewStickerSet', $params, ['png_sticker'], $parser);
     }
 
     /**
@@ -544,11 +544,11 @@ class Api
      */
     public function addStickerToSet(array $params)
     {
-        $response = $this->post('addStickerToSet', $params, ['png_sticker']);
-
-        return $this->prepareResponse(function (TelegramResponse $response) {
+        $parser = function (TelegramResponse $response) {
             return $response->getResult();
-        }, $response);
+        };
+
+        return $this->uploadFile('addStickerToSet', $params, ['png_sticker'], $parser);
     }
 
     /**
@@ -1324,11 +1324,11 @@ class Api
      */
     public function setChatPhoto(array $params)
     {
-        $response = $this->post('setChatPhoto', $params, ['photo']);
-
-        return $this->prepareResponse(function (TelegramResponse $response) {
+        $parser = function (TelegramResponse $response) {
             return $response->getResult();
-        }, $response);
+        };
+
+        return $this->uploadFile('setChatPhoto', $params, ['photo'], $parser);
     }
 
     /**
@@ -1797,7 +1797,11 @@ class Api
             throw new TelegramSDKException('Invalid URL, should be a HTTPS url.');
         }
 
-        return $this->uploadFile('setWebhook', $params, ['certificate']);
+        $parser = function (TelegramResponse $response) {
+            return $response->getResult();
+        };
+
+        return $this->uploadFile('setWebhook', $params, ['certificate'], $parser);
     }
 
     /**
@@ -2008,12 +2012,13 @@ class Api
      * @param string $endpoint
      * @param array  $params
      * @param array  $files
+     * @param Closure|null $parser
      *
      * @throws TelegramSDKException
      *
      * @return Message|true|Closure
      */
-    protected function uploadFile($endpoint, array $params, array $files)
+    protected function uploadFile($endpoint, array $params, array $files, Closure $parser = null)
     {
         foreach ($files as $key) {
             if (array_key_exists($key, $params) && !is_resource($params[$key]) && ! $params[$key] instanceof StreamInterface) {
@@ -2042,13 +2047,13 @@ class Api
         $response = $this->post($endpoint, $multipart_params, true);
 
 
-        return $this->prepareResponse(function (TelegramResponse $response) use ($endpoint) {
-            if ($endpoint == 'setWebhook') {
-                return $response->getResult();
-            }
+        if (! $parser) {
+            $parser = function (TelegramResponse $response) {
+                return new Message($response->getDecodedBody());
+            };
+        }
 
-            return new Message($response->getDecodedBody());
-        }, $response);
+        return $this->prepareResponse($parser, $response);
     }
 
     /**
