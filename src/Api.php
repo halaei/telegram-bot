@@ -20,7 +20,6 @@ use Telegram\Bot\Objects\UnknownObject;
 use Telegram\Bot\Objects\Update;
 use Telegram\Bot\Objects\User;
 use Telegram\Bot\Objects\UserProfilePhotos;
-use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Objects\WebhookInfo;
 
 /**
@@ -1896,91 +1895,6 @@ class Api
     }
 
     /**
-     * Builds a custom keyboard markup.
-     *
-     * <code>
-     * $params = [
-     *   'keyboard'          => '',
-     *   'resize_keyboard'   => '',
-     *   'one_time_keyboard' => '',
-     *   'selective'         => '',
-     * ];
-     * </code>
-     *
-     * @deprecated Use Telegram\Bot\Keyboard\Keyboard::make(array $params = []) instead.
-     *             To be removed in next major version.
-     *
-     * @link       https://core.telegram.org/bots/api#replykeyboardmarkup
-     *
-     * @param array $params
-     *
-     * @var array   $params ['keyboard']
-     * @var bool    $params ['resize_keyboard']
-     * @var bool    $params ['one_time_keyboard']
-     * @var bool    $params ['selective']
-     *
-     * @return string
-     */
-    public function replyKeyboardMarkup(array $params)
-    {
-        return Keyboard::make($params);
-    }
-
-    /**
-     * Hide the current custom keyboard and display the default letter-keyboard.
-     *
-     * <code>
-     * $params = [
-     *   'remove_keyboard' => true,
-     *   'selective'       => false,
-     * ];
-     * </code>
-     *
-     * @deprecated Use Telegram\Bot\Keyboard\Keyboard::hide(array $params = []) instead.
-     *             To be removed in next major version.
-     *
-     * @link       https://core.telegram.org/bots/api#replykeyboardhide
-     *
-     * @param array $params
-     *
-     * @var bool    $params ['remove_keyboard']
-     * @var bool    $params ['selective']
-     *
-     * @return string
-     */
-    public static function replyKeyboardHide(array $params = [])
-    {
-        return Keyboard::hide($params);
-    }
-
-    /**
-     * Display a reply interface to the user (act as if the user has selected the bot‘s message and tapped ’Reply').
-     *
-     * <code>
-     * $params = [
-     *   'force_reply' => true,
-     *   'selective'   => false,
-     * ];
-     * </code>
-     *
-     * @deprecated Use Telegram\Bot\Keyboard\Keyboard::forceReply(array $params = []) instead.
-     *             To be removed in next major version.
-     *
-     * @link       https://core.telegram.org/bots/api#forcereply
-     *
-     * @param array $params
-     *
-     * @var bool    $params ['force_reply']
-     * @var bool    $params ['selective']
-     *
-     * @return string
-     */
-    public static function forceReply(array $params = [])
-    {
-        return Keyboard::forceReply($params);
-    }
-
-    /**
      * Sends a POST request to Telegram Bot API and returns the result.
      *
      * @param string $endpoint
@@ -1991,18 +1905,13 @@ class Api
      */
     protected function post($endpoint, array $params = [], $fileUpload = false)
     {
-        if ($fileUpload) {
-            $params = ['multipart' => $params];
-        } else {
+        $token = $this->extractAccessToken($params);
 
-            if (array_key_exists('reply_markup', $params)) {
-                $params['reply_markup'] = (string)$params['reply_markup'];
-            }
-
+        if (! $fileUpload) {
             $params = ['form_params' => $params];
         }
 
-        return $this->sendRequest($endpoint, $params);
+        return $this->sendRequest($endpoint, $params, $token);
     }
 
     /**
@@ -2034,6 +1943,8 @@ class Api
         $i = 0;
         $multipart_params = [];
 
+        $token = $this->extractAccessToken($params);
+
         foreach ($params as $name => $contents) {
             if (is_null($contents)) {
                 continue;
@@ -2044,8 +1955,10 @@ class Api
             ++$i;
         }
 
-        $response = $this->post($endpoint, $multipart_params, true);
-
+        $response = $this->post($endpoint, [
+            'multipart'     => $multipart_params,
+            '_AccessToken_' => $token,
+        ], true);
 
         if (! $parser) {
             $parser = function (TelegramResponse $response) {
@@ -2056,17 +1969,30 @@ class Api
         return $this->prepareResponse($parser, $response);
     }
 
+    protected function extractAccessToken(array &$params)
+    {
+        if (array_key_exists('_AccessToken_', $params)) {
+            $token = $params['_AccessToken_'];
+            unset($params['_AccessToken_']);
+
+            return $token;
+        } else {
+            return $this->getAccessToken();
+        }
+    }
+
     /**
      * Sends a request to Telegram Bot API and returns the result.
      *
      * @param string $endpoint
      * @param array  $params
+     * @param string $token
      *
      * @return TelegramResponse
      */
-    protected function sendRequest($endpoint, array $params = [])
+    protected function sendRequest($endpoint, array $params, $token)
     {
-        $request = $this->request($endpoint, $params);
+        $request = $this->request($endpoint, $params, $token);
 
         $time = microtime(true);
 
@@ -2094,13 +2020,14 @@ class Api
      *
      * @param string $endpoint
      * @param array  $params
+     * @param string $token
      *
      * @return TelegramRequest
      */
-    protected function request($endpoint, array $params = [])
+    protected function request($endpoint, array $params, $token)
     {
         return new TelegramRequest(
-            $this->getAccessToken(),
+            $token,
             $endpoint,
             $params,
             $this->isAsyncRequest(),

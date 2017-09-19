@@ -1,7 +1,22 @@
 # Version 0.4.0
 
-## Fixes
+## Added
+- The API functions now accept alternative bot access token via `$params['_AccessToken_']`:
+```php
+$api = new \Telegram\Bot\Api();
+$api->sendMessage([
+    '_AccessToken_' => '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11',
+    'chat_id'       => 12341234,
+    'text'          => 'test',
+]);
+```
+## Changed
+- Add `Closure $parser = null` parameter to `Api::uploadFile()` protected function.
+- Add `$token` parameter to `Api::sendRequest()` and `Api::request` protected functions.
+- Changes interaction between `Api::uploadFile()` and `Api::post()` protected functions.
+
+## Fixed
 - Fix `setChatPhoto()`, `createNewStickerSet()`, `addStickerToSet()`, and `uploadStickerFile()`.
 
-## Changes
-- Add `Closure $parser = null` parameter to `Api::uploadFile()` function.
+## Removed
+- The deprecated `Telegram\Keyboard` classes and keyboard related functions in `Telegram\Api` class are removed.
