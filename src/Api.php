@@ -1906,19 +1906,15 @@ class Api
      *
      * @param string $endpoint
      * @param array  $params
-     * @param bool   $fileUpload Set true if a file is being uploaded.
+     * @param array  $files The file fields.
      *
      * @return TelegramResponse
      */
-    protected function post($endpoint, array $params = [], $fileUpload = false)
+    protected function post($endpoint, array $params = [], array $files = [])
     {
         $token = $this->extractAccessToken($params);
 
-        if (! $fileUpload) {
-            $params = ['form_params' => $params];
-        }
-
-        return $this->sendRequest($endpoint, $params, $token);
+        return $this->sendRequest($endpoint, $params, $files, $token);
     }
 
     /**
@@ -1947,25 +1943,7 @@ class Api
             }
         }
 
-        $i = 0;
-        $multipart_params = [];
-
-        $token = $this->extractAccessToken($params);
-
-        foreach ($params as $name => $contents) {
-            if (is_null($contents)) {
-                continue;
-            }
-
-            $multipart_params[$i]['name'] = $name;
-            $multipart_params[$i]['contents'] = $contents;
-            ++$i;
-        }
-
-        $response = $this->post($endpoint, [
-            'multipart'     => $multipart_params,
-            '_AccessToken_' => $token,
-        ], true);
+        $response = $this->post($endpoint, $params, $files);
 
         if (! $parser) {
             $parser = function (TelegramResponse $response) {
@@ -1993,13 +1971,14 @@ class Api
      *
      * @param string $endpoint
      * @param array  $params
+     * @param array  $files
      * @param string $token
      *
      * @return TelegramResponse
      */
-    protected function sendRequest($endpoint, array $params, $token)
+    protected function sendRequest($endpoint, array $params, array $files, $token)
     {
-        $request = $this->request($endpoint, $params, $token);
+        $request = $this->request($endpoint, $params, $files, $token);
 
         $this->sending($request);
 
@@ -2029,16 +2008,18 @@ class Api
      *
      * @param string $endpoint
      * @param array  $params
+     * @param array  $files
      * @param string $token
      *
      * @return TelegramRequest
      */
-    protected function request($endpoint, array $params, $token)
+    protected function request($endpoint, array $params, array $files, $token)
     {
         return new TelegramRequest(
             $token,
             $endpoint,
             $params,
+            $files,
             $this->isAsyncRequest(),
             $this->getTimeOut(),
             $this->getConnectTimeOut()

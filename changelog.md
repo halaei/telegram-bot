@@ -1,3 +1,6 @@
+# Version 0.5.0
+
+- Move some logic from `Api` to `TelegramRequest`, so that `TelegramRequest::params` represents the params passed to `Api` methods.
 
 # Version 0.4.0
 

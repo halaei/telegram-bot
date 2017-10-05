@@ -25,6 +25,13 @@ class TelegramRequest
     protected $params;
 
     /**
+     * The file params.
+     *
+     * @var array
+     */
+    protected $files;
+
+    /**
      * Indicates if the request to Telegram will be asynchronous (non-blocking).
      *
      * @var bool
@@ -51,15 +58,17 @@ class TelegramRequest
      * @param string $accessToken
      * @param string $endpoint
      * @param array  $params
+     * @param array  $files
      * @param bool   $isAsyncRequest
      * @param int    $timeOut
      * @param int    $connectTimeOut
      */
-    public function __construct($accessToken, $endpoint, array $params, $isAsyncRequest, $timeOut, $connectTimeOut)
+    public function __construct($accessToken, $endpoint, array $params, array $files, $isAsyncRequest, $timeOut, $connectTimeOut)
     {
         $this->accessToken = $accessToken;
         $this->endpoint = $endpoint;
         $this->params = $params;
+        $this->files  = $files;
         $this->isAsyncRequest = $isAsyncRequest;
         $this->timeOut = $timeOut;
         $this->connectTimeOut = $connectTimeOut;
@@ -93,6 +102,42 @@ class TelegramRequest
     public function getParams()
     {
         return $this->params;
+    }
+
+    /**
+     * Return the file params.
+     *
+     * @return array
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    /**
+     * Get the guzzle http options.
+     *
+     * @return array
+     */
+    public function getOptions()
+    {
+        if (! $this->files) {
+            return ['form_params' => $this->params];
+        }
+
+        $i = 0;
+        $multipart = [];
+        foreach ($this->params as $name => $contents) {
+            if (is_null($contents)) {
+                continue;
+            }
+
+            $multipart[$i]['name'] = $name;
+            $multipart[$i]['contents'] = $contents;
+            ++$i;
+        }
+
+        return ['multipart' => $multipart];
     }
 
     /**
