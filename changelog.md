@@ -1,3 +1,4 @@
+
 # Version 0.4.0
 
 ## Added
@@ -10,6 +11,9 @@ $api->sendMessage([
     'text'          => 'test',
 ]);
 ```
+
+- A new `Api::onSending` event handler is introduced.
+
 ## Changed
 - Add `Closure $parser = null` parameter to `Api::uploadFile()` protected function.
 - Add `$token` parameter to `Api::sendRequest()` and `Api::request` protected functions.

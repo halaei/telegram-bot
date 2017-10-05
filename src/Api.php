@@ -79,6 +79,13 @@ class Api
     protected $connectTimeOut = 10;
 
     /**
+     * The event that will be fired on sending a request.
+     *
+     * @var null|Closure function(TelegramRequest $request)
+     */
+    protected $onSending;
+
+    /**
      * The fulfillment handler to be called after each successful API call.
      *
      * @var null|Closure function(TelegramResponse $response, float $elapsedTime)
@@ -1994,6 +2001,8 @@ class Api
     {
         $request = $this->request($endpoint, $params, $token);
 
+        $this->sending($request);
+
         $time = microtime(true);
 
         $promise = $this->client->sendRequest($request);
@@ -2131,6 +2140,28 @@ class Api
     }
 
     /**
+     * Clear or set a sending handler on the subsequent API requests.
+     *
+     * <code>
+     * $api->onSending(function (TelegramRequest $request) {
+     *     //Profile.
+     *     //Throw an exception if expecting too many request.
+     *     //...
+     * })
+     * </code>
+     *
+     * @param null|Closure $onSending function(TelegramRequest $request)
+     *
+     * @return $this
+     */
+    public function onSending(Closure $onSending = null)
+    {
+        $this->onSending = $onSending;
+
+        return $this;
+    }
+
+    /**
      * Clear or set a fulfillment handler on the subsequent API requests.
      *
      * <code>
@@ -2174,24 +2205,34 @@ class Api
     }
 
     /**
-     * @param TelegramResponse $request
-     * @param float            $elapsedTime
+     * @param TelegramRequest $request
      */
-    protected function fulfilled(TelegramResponse $request, $elapsedTime)
+    protected function sending(TelegramRequest $request)
     {
-        if (is_callable($this->onFulfilled)) {
-            call_user_func_array($this->onFulfilled, [$request, $elapsedTime]);
+        if (is_callable($this->onSending)) {
+            call_user_func_array($this->onSending, [$request]);
         }
     }
 
     /**
-     * @param TelegramResponse $request
+     * @param TelegramResponse $response
      * @param float            $elapsedTime
      */
-    protected function rejected(TelegramResponse $request, $elapsedTime)
+    protected function fulfilled(TelegramResponse $response, $elapsedTime)
+    {
+        if (is_callable($this->onFulfilled)) {
+            call_user_func_array($this->onFulfilled, [$response, $elapsedTime]);
+        }
+    }
+
+    /**
+     * @param TelegramResponse $response
+     * @param float            $elapsedTime
+     */
+    protected function rejected(TelegramResponse $response, $elapsedTime)
     {
         if (is_callable($this->onRejected)) {
-            call_user_func_array($this->onRejected, [$request, $elapsedTime]);
+            call_user_func_array($this->onRejected, [$response, $elapsedTime]);
         }
     }
 }

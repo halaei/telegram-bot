@@ -15,6 +15,7 @@ use Telegram\Bot\Objects\User;
 use Telegram\Bot\Objects\WebhookInfo;
 use Telegram\Bot\TelegramClient;
 use Telegram\Bot\Objects\Message;
+use Telegram\Bot\TelegramRequest;
 use Telegram\Bot\TelegramResponse;
 use Telegram\Bot\Tests\Mocks\Mocker;
 use Telegram\Bot\HttpClients\GuzzleHttpClient;
@@ -29,6 +30,12 @@ class ApiTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->api = new Api('token');
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+        \Mockery::close();
     }
 
     /**
@@ -656,6 +663,28 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $api->getWebhookInfo();
 
         $this->assertTrue($success);
+    }
+
+    public function test_on_sending_is_called()
+    {
+        $api = Mocker::createApiResponse([
+            'url'                    => 'https://foo.com/bar',
+            'has_custom_certificate' => false,
+            'pending_update_count'   => 10,
+            'last_error_date'        => 100000,
+            'last_error_message'     => 'foobar',
+        ]);
+
+        $sending = false;
+
+        $api->onSending(function (TelegramRequest $request) use (&$sending) {
+            $this->assertEquals('getWebhookInfo', $request->getEndpoint());
+            $sending = true;
+        });
+
+        $this->assertInstanceOf(WebhookInfo::class, $api->getWebhookInfo());
+
+        $this->assertTrue($sending);
     }
 
     public function test_on_rejected_is_called()
