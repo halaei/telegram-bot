@@ -11,6 +11,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  *    'latitude'                => '',
  *    'longitude'               => '',
  *    'title'                   => '',
+ *    'live_period'             => '',
  *    'reply_markup'            => '',
  *    'input_message_content'   => '',
  *    'thumb_url'               => '',
@@ -25,6 +26,7 @@ namespace Telegram\Bot\Objects\InlineQuery;
  * @method $this setLatitude($float)                Location latitude in degrees
  * @method $this setLongitude($float)               Location longitude in degrees
  * @method $this setTitle($string)                  Location title
+ * @method $this setLivePeriod($int)                 	Optional. Period in seconds for which the location can be updated, should be between 60 and 86400.
  * @method $this setReplyMarkup($object)            Optional. Inline keyboard attached to the message
  * @method $this setInputMessageContent($object)    Optional. Content of the message to be sent instead of the location
  * @method $this setThumbUrl($string)               Optional. Url of the thumbnail for the result

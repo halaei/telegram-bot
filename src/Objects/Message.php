@@ -18,6 +18,7 @@ namespace Telegram\Bot\Objects;
  * @method Message            getReplyToMessage()         (Optional). For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
  * @method string             getAuthorSignature()        (Optional). Signature of the post author for messages in channels.
  * @method MessageEntity[]    getEntities()               (Optional). For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text.
+ * @method MessageEntity[]    getCaptionEntities()        (Optional). For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption.
  * @method Audio              getAudio()                  (Optional). Message is an audio file, information about the file.
  * @method Document           getDocument()               (Optional). Message is a general file, information about the file.
  * @method Game               getGame()                   (Optional). Message is a game, information about the game.
@@ -58,6 +59,7 @@ class Message extends BaseObject
             'forward_from_chat'  => Chat::class,
             'reply_to_message'   => self::class,
             'entities'           => MessageEntity::class,
+            'caption_entities'   => MessageEntity::class,
             'audio'              => Audio::class,
             'document'           => Document::class,
             'game'               => Game::class,

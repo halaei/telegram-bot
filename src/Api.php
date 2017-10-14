@@ -890,6 +890,7 @@ class Api
      *   'chat_id'              => '',
      *   'latitude'             => '',
      *   'longitude'            => '',
+     *   'live_period'          => '',
      *   'disable_notification' => '',
      *   'reply_to_message_id'  => '',
      *   'reply_markup'         => '',
@@ -903,6 +904,7 @@ class Api
      * @var int|string $params ['chat_id']
      * @var float      $params ['latitude']
      * @var float      $params ['longitude']
+     * @var int        $param ['live_period']
      * @var bool       $params ['disable_notification']
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
@@ -916,6 +918,84 @@ class Api
         return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
         }, $response);
+    }
+
+    /**
+     * Edit live location messages sent by the bot or via the bot.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'              => '',
+     *   'message_id'           => '',
+     *   'inline_message_id'    => '',
+     *   'latitude'             => '',
+     *   'longitude'            => '',
+     *   'reply_markup'         => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#editmessagelivelocation
+     *
+     * @param array    $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var int        $params ['message_id']
+     * @var string     $params ['inline_message_id']
+     * @var float      $params ['latitude']
+     * @var float      $params ['longitude']
+     * @var string     $params ['reply_markup']
+     *
+     * @return Message|true|Closure
+     */
+    public function editMessageLiveLocation(array $params)
+    {
+        $response = $this->post('editMessageLiveLocation', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            $result = $response->getResult();
+            if ($result === true) {
+                return true;
+            }
+            return new Message($result);
+        }, $response);
+    }
+
+    /**
+     * Stop updating a live location message sent by the bot or
+     * via the bot (for inline bots) before live_period expires.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'              => '',
+     *   'message_id'           => '',
+     *   'inline_message_id'    => '',
+     *   'reply_markup'         => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#stopmessagelivelocation
+     *
+     * @param array    $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var int        $params ['message_id']
+     * @var string     $params ['inline_message_id']
+     * @var string     $params ['reply_markup']
+     *
+     * @return Message|true|Closure
+     */
+    public function stopMessageLiveLocation(array $params)
+    {
+        $response = $this->post('stopMessageLiveLocation', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            $result = $response->getResult();
+            if ($result === true) {
+                return true;
+            }
+            return new Message($result);
+        }, $response);
+
     }
 
     /**
@@ -1740,6 +1820,38 @@ class Api
 
         return $this->prepareResponse(function (TelegramResponse $response) {
             return new ChatMember($response->getDecodedBody());
+        }, $response);
+    }
+
+    /**
+     * Set a new group sticker set for a supergroup.
+     *
+     * @param array $params
+     *
+     * @return true|Closure
+     */
+    public function setChatStickerSet(array $params)
+    {
+        $response = $this->post('setChatStickerSet', $params);
+
+        return $this->prepareResponse(function () {
+            return true;
+        }, $response);
+    }
+
+    /**
+     * Delete a group sticker set from a supergroup.
+     *
+     * @param array $params
+     *
+     * @return true|Closure
+     */
+    public function deleteChatStickerSet(array $params)
+    {
+        $response = $this->post('deleteChatStickerSet', $params);
+
+        return $this->prepareResponse(function () {
+            return true;
         }, $response);
     }
 
