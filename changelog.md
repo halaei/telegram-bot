@@ -2,6 +2,7 @@
 
 - Move some logic from `Api` to `TelegramRequest`, so that `TelegramRequest::params` represents the params passed to `Api` methods.
 - Support for Bot Api 3.4.
+- Add Message::getCaptionEntityText() method.
 
 # Version 0.4.0
 

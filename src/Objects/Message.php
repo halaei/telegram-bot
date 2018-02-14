@@ -133,9 +133,20 @@ class Message extends BaseObject
      * @param MessageEntity $entity
      * @return string
      */
-    public function getEntityText($entity)
+    public function getEntityText(MessageEntity $entity)
     {
         return $this->substr($this->getText(), $entity->getOffset(), $entity->getLength());
+    }
+
+    /**
+     * Get the text of a given caption entity.
+     *
+     * @param MessageEntity $entity
+     * @return string
+     */
+    public function getCaptionEntityText(MessageEntity $entity)
+    {
+        return $this->substr($this->getCaption(), $entity->getOffset(), $entity->getLength());
     }
 
     /**
