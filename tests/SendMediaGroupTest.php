@@ -1,50 +1,37 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: afshin
- * Date: 2/18/18
- * Time: 9:48 AM
- */
-
 
 namespace Tests\Unit;
 
 use Telegram\Bot\Api;
-use Telegram\Bot\Objects\InputMedia;
-use Tests\TestCase;
+use Telegram\Bot\Objects\Message;
 
-
-class TelegramTest extends TestCase
+class SendMediaGroupTest extends \PHPUnit_Framework_TestCase
 {
+    public function test_send_message()
+    {
+        $token = getenv('TOKEN');
 
-    public function testSendMessage(){
-        $this->createApplication();
-        $telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
-        $photo1=[
-            "type" => "photo",
-            "media" => "AgADBAADKawxG8ueQVD7nE6BQ_ZF0olGJhoABJEUbwaiUREpWK8DAAEC",
-            "caption" => "this is a test1"
-        ];
+        if (! $token) {
+            $this->markTestSkipped();
+        }
 
-        $photo2=[
-            "type" => "photo",
-            "media" => "AgADBAADKawxG8ueQVD7nE6BQ_ZF0olGJhoABEeU1_VonKqxV68DAAEC",
-            "caption" => "this is a test"
-        ];
+        $telegram = new Api($token);
 
-//        $photo1=new InputMedia();
-//        $photo2=new InputMedia();
+        $result = $telegram->sendMediaGroup([
+            'chat_id' => getenv('CHAT_ID') ?: 123909455,
+            'media' => json_encode([[
+                'type' => 'photo',
+                'media' => getenv('PHOTO_ID_1') ?: 'AgADBAADKawxG8ueQVD7nE6BQ_ZF0olGJhoABJEUbwaiUREpWK8DAAEC',
+                'caption' => 'Test 1',
+            ], [
+                'type' => 'photo',
+                'media' => getenv('PHOTO_ID_2') ?: 'AgADBAADKawxG8ueQVD7nE6BQ_ZF0olGJhoABEeU1_VonKqxV68DAAEC',
+                'caption' => 'Test 2'
+            ]]),
+        ]);
 
-        $media=[$photo1,$photo2];
-        $chat_id=123909455;
-
-        $data=[
-            "chat_id" => $chat_id,
-            "media" => json_encode($media),
-        ];
-
-        dd($telegram->sendMediaGroup($data));
-
+        $this->assertCount(2, $result);
+        $this->assertInstanceOf(Message::class, $result[0]);
+        $this->assertInstanceOf(Message::class, $result[1]);
     }
-
 }

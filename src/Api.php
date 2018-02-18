@@ -135,42 +135,6 @@ class Api
         $this->asyncWait();
     }
 
-
-    /**
-     * Send a group of photos or videos as an album.
-     *
-     *  *
-     * <code>
-     * $params = [
-     *   'chat_id'      => '',
-     *   'media'              => [],
-     *   'disable_notification'           => false,
-     *   'reply_to_message_id'          => 0,
-     * ];
-     * </code>
-     *
-     * @link https://core.telegram.org/bots/api#sendMediaGroup
-     *
-     * @param array    $params
-     *
-     * @var int|string $params ['chat_id']
-     * @var array     $params ['media']
-     * @var bool     $params ['disable_notification']
-     * @var Integer       $params ['reply_to_message_id']
-     *
-     * @return On success, an array of the sent Messages is returned.
-     */
-    public function sendMediaGroup(array $params){
-        $response = $this->post('sendMediaGroup', $params);
-
-        return $this->prepareResponse(function (TelegramResponse $response)
-        {
-            return collect($response->getResult())->map(function ($message) {
-                return new Message($message);
-            });
-        }, $response);
-    }
-
     /**
      * Returns the TelegramClient service.
      *
@@ -735,6 +699,41 @@ class Api
     public function sendVideoNote(array $params)
     {
         return $this->uploadFile('sendVideoNote', $params, ['video_note']);
+    }
+
+    /**
+     * Send a group of photos or videos as an album.
+     *
+     *  *
+     * <code>
+     * $params = [
+     *   'chat_id'      => '',
+     *   'media'              => [],
+     *   'disable_notification'           => false,
+     *   'reply_to_message_id'          => 0,
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#sendMediaGroup
+     *
+     * @param array    $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var array     $params ['media']
+     * @var bool     $params ['disable_notification']
+     * @var Integer       $params ['reply_to_message_id']
+     *
+     * @return Collection|Message[]
+     */
+    public function sendMediaGroup(array $params){
+        $response = $this->post('sendMediaGroup', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response)
+        {
+            return collect($response->getResult())->map(function ($message) {
+                return new Message($message);
+            });
+        }, $response);
     }
 
     /*
@@ -1545,13 +1544,13 @@ class Api
     }
 
     /**
-     *  unpin a message in a supergroup or a channel.
+     *  Unpin a message in a supergroup or a channel.
      *
      * The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
      *
      * @link https://core.telegram.org/bots/api#unpinchatmessage
      *
-     * @param array $params $params ['chat_id']
+     * @param array $params
      *
      * @var int|string $params ['chat_id']
      *
@@ -2113,10 +2112,6 @@ class Api
         }
     }
 
-
-
-
-
     /**
      * Sends a request to Telegram Bot API and returns the result.
      *
@@ -2367,6 +2362,4 @@ class Api
             call_user_func_array($this->onRejected, [$response, $elapsedTime]);
         }
     }
-
-
 }
