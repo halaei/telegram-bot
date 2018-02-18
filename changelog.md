@@ -1,4 +1,6 @@
-...
+# Version 0.6.0
+- Support for Bot API 3.6.
+- Support for multipart attachments.
 
 # Version 0.5.0
 
