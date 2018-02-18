@@ -53,6 +53,13 @@ class TelegramRequest
     protected $connectTimeOut;
 
     /**
+     * Multipart attachments.
+     *
+     * @var array
+     */
+    protected $attachments = [];
+
+    /**
      * Creates a new Request entity.
      *
      * @param string $accessToken
@@ -121,7 +128,7 @@ class TelegramRequest
      */
     public function getOptions()
     {
-        if (! $this->files) {
+        if (! $this->files && ! $this->attachments) {
             return ['form_params' => $this->params];
         }
 
@@ -137,7 +144,7 @@ class TelegramRequest
             ++$i;
         }
 
-        return ['multipart' => $multipart];
+        return ['multipart' => array_merge($multipart, $this->attachments)];
     }
 
     /**
@@ -176,5 +183,19 @@ class TelegramRequest
     public function getConnectTimeOut()
     {
         return $this->connectTimeOut;
+    }
+
+    /**
+     * Set the attachments.
+     *
+     * @param array $attachments
+     *
+     * @return $this
+     */
+    public function setAttachments(array $attachments)
+    {
+        $this->attachments = $attachments;
+
+        return $this;
     }
 }

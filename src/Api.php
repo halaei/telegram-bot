@@ -13,6 +13,7 @@ use Telegram\Bot\Objects\Chat;
 use Telegram\Bot\Objects\ChatMember;
 use Telegram\Bot\Objects\File;
 use Telegram\Bot\Objects\GameHighScore;
+use Telegram\Bot\Objects\InputMedia;
 use Telegram\Bot\Objects\MaskPosition;
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\StickerSet;
@@ -725,8 +726,23 @@ class Api
      *
      * @return Collection|Message[]
      */
-    public function sendMediaGroup(array $params){
-        $response = $this->post('sendMediaGroup', $params);
+    public function sendMediaGroup(array $params)
+    {
+        $attachments = [];
+        if (is_array($params['media'])) {
+            foreach ($params['media'] as $key => $media) {
+                if ($media instanceof InputMedia) {
+                    $part = $media->extractAttachment('__ATTACHED_FILE__'.$key);
+                    $params['media'][$key] = $media->toArray();
+                    if ($part) {
+                        $attachments[] = $part;
+                    }
+                }
+            }
+            $params['media'] = json_encode($params['media']);
+        }
+
+        $response = $this->post('sendMediaGroup', $params, [], $attachments);
 
         return $this->prepareResponse(function (TelegramResponse $response)
         {
@@ -2053,14 +2069,15 @@ class Api
      * @param string $endpoint
      * @param array  $params
      * @param array  $files The file fields.
+     * @param array  $attachments Multipart attachments.
      *
      * @return TelegramResponse
      */
-    protected function post($endpoint, array $params = [], array $files = [])
+    protected function post($endpoint, array $params = [], array $files = [], array $attachments = [])
     {
         $token = $this->extractAccessToken($params);
 
-        return $this->sendRequest($endpoint, $params, $files, $token);
+        return $this->sendRequest($endpoint, $params, $files, $attachments, $token);
     }
 
     /**
@@ -2118,13 +2135,14 @@ class Api
      * @param string $endpoint
      * @param array  $params
      * @param array  $files
+     * @param array  $attachments
      * @param string $token
      *
      * @return TelegramResponse
      */
-    protected function sendRequest($endpoint, array $params, array $files, $token)
+    protected function sendRequest($endpoint, array $params, array $files, array $attachments, $token)
     {
-        $request = $this->request($endpoint, $params, $files, $token);
+        $request = $this->request($endpoint, $params, $files, $attachments,  $token);
 
         $this->sending($request);
 
@@ -2155,13 +2173,14 @@ class Api
      * @param string $endpoint
      * @param array  $params
      * @param array  $files
+     * @param array  $attachments
      * @param string $token
      *
      * @return TelegramRequest
      */
-    protected function request($endpoint, array $params, array $files, $token)
+    protected function request($endpoint, array $params, array $files, array $attachments, $token)
     {
-        return new TelegramRequest(
+        return (new TelegramRequest(
             $token,
             $endpoint,
             $params,
@@ -2169,7 +2188,7 @@ class Api
             $this->isAsyncRequest(),
             $this->getTimeOut(),
             $this->getConnectTimeOut()
-        );
+        ))->setAttachments($attachments);
     }
 
     /**
