@@ -1,5 +1,5 @@
 {
-  "name": "halaei/telegram-bot",
+  "name": "peyman-abdi/telegram-bot",
   "description": "The Unofficial Telegram Bot API PHP SDK",
   "keywords": ["telegram", "telegram bot", "telegram bot api", "telegram sdk", "telegram php", "laravel telegram", "laravel"],
   "type": "library",
