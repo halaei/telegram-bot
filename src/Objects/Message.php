@@ -193,7 +193,13 @@ class Message extends BaseObject
         return false;
     }
 
-    public function hasHtmlCaption() {
+    /**
+     * Determine if the caption has any HTML entity.
+     *
+     * @return bool
+     */
+    public function hasHtmlCaption()
+    {
 	    foreach ($this->getCaptionEntities() ?: [] as $entity) {
 		    if ($entity->isHtmlEntity()) {
 			    return true;
@@ -209,63 +215,56 @@ class Message extends BaseObject
      */
     public function getHtml()
     {
-        $text = $this->getText();
+        return $this->getTextOrCaptionHtml($this->getText(), $this->getEntities(), 'getEntityText');
+    }
+
+    /**
+     * Return the HTML code of the caption.
+     *
+     * @return string
+     */
+    public function getCaptionHtml()
+    {
+        return $this->getTextOrCaptionHtml($this->getCaption(), $this->getCaptionEntities(), 'getCaptionEntityText');
+    }
+
+    /**
+     * @param  string  $text
+     * @param  MessageEntity[] $entities
+     * @param  string  $getEntityText
+     * @return string
+     *
+     * @internal param $retriever
+     *
+     */
+    protected function getTextOrCaptionHtml($text, $entities, $getEntityText)
+    {
         $html = '';
         $lastOffset = 0;
-        foreach ($this->getEntities() ?: [] as $entity) {
+        foreach ($entities ?: [] as $entity) {
             $html .= e($this->substr($text, $lastOffset, $entity->getOffset() - $lastOffset));
             $lastOffset = $entity->getOffset() + $entity->getLength();
             if ($entity->getType() === 'bold') {
-                $html .= '<b>'.e($this->getEntityText($entity)).'</b>';
+                $html .= '<b>'.e($this->$getEntityText($entity)).'</b>';
             } elseif ($entity->getType() === 'italic') {
-                $html .= '<i>'.e($this->getEntityText($entity)).'</i>';
+                $html .= '<i>'.e($this->$getEntityText($entity)).'</i>';
             } elseif ($entity->getType() === 'code') {
-                $html .= '<code>'.e($this->getEntityText($entity)).'</code>';
+                $html .= '<code>'.e($this->$getEntityText($entity)).'</code>';
             } elseif ($entity->getType() === 'pre') {
-                $html .= '<pre>'.e($this->getEntityText($entity)).'</pre>';
+                $html .= '<pre>'.e($this->$getEntityText($entity)).'</pre>';
             } elseif ($entity->getType() === 'text_link') {
                 $url = $entity->getUrl();
-                $html .= "<a href=\"$url\">".e($this->getEntityText($entity)).'</a>';
+                $html .= "<a href=\"$url\">".e($this->$getEntityText($entity)).'</a>';
             } elseif ($entity->getType() === 'text_mention') {
                 $url = 'tg://user?id='.$entity->getUser()->getId();
-                $html .= "<a href=\"$url\">".e($this->getEntityText($entity)).'</a>';
+                $html .= "<a href=\"$url\">".e($this->$getEntityText($entity)).'</a>';
             } else {
-                $html .= e($this->getEntityText($entity));
+                $html .= e($this->$getEntityText($entity));
             }
         }
 
         $html .= e($this->substr($text, $lastOffset, mb_strlen($text)));
         return $html;
-    }
-
-    public function getCaptionHtml() {
-	    $text = $this->getCaption();
-	    $html = '';
-	    $lastOffset = 0;
-	    foreach ($this->getCaptionEntities() ?: [] as $entity) {
-		    $html .= e($this->substr($text, $lastOffset, $entity->getOffset() - $lastOffset));
-		    $lastOffset = $entity->getOffset() + $entity->getLength();
-		    if ($entity->getType() === 'bold') {
-			    $html .= '<b>'.e($this->getCaptionEntityText($entity)).'</b>';
-		    } elseif ($entity->getType() === 'italic') {
-			    $html .= '<i>'.e($this->getCaptionEntityText($entity)).'</i>';
-		    } elseif ($entity->getType() === 'code') {
-			    $html .= '<code>'.e($this->getCaptionEntityText($entity)).'</code>';
-		    } elseif ($entity->getType() === 'pre') {
-			    $html .= '<pre>'.e($this->getCaptionEntityText($entity)).'</pre>';
-		    } elseif ($entity->getType() === 'text_link') {
-			    $url = $entity->getUrl();
-			    $html .= "<a href=\"$url\">".e($this->getCaptionEntityText($entity)).'</a>';
-		    } elseif ($entity->getType() === 'text_mention') {
-			    $url = 'tg://user?id='.$entity->getUser()->getId();
-			    $html .= "<a href=\"$url\">".e($this->getCaptionEntityText($entity)).'</a>';
-		    } else {
-			    $html .= e($this->getCaptionEntityText($entity));
-		    }
-	    }
-
-	    $html .= e($this->substr($text, $lastOffset, mb_strlen($text)));
-	    return $html;
     }
 
     /**

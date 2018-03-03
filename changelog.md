@@ -1,6 +1,9 @@
+#
+
 # Version 0.6.0
 - Support for Bot API 3.6.
 - Support for multipart attachments.
+- Add methods `Message::getCaptionHtml()` and `Message::hasHtmlCaption()`.
 
 # Version 0.5.0
 
