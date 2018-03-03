@@ -193,6 +193,15 @@ class Message extends BaseObject
         return false;
     }
 
+    public function hasHtmlCaption() {
+	    foreach ($this->getCaptionEntities() ?: [] as $entity) {
+		    if ($entity->isHtmlEntity()) {
+			    return true;
+		    }
+	    }
+	    return false;
+    }
+
     /**
      * Return the HTML code of the text.
      *
@@ -227,6 +236,36 @@ class Message extends BaseObject
 
         $html .= e($this->substr($text, $lastOffset, mb_strlen($text)));
         return $html;
+    }
+
+    public function getCaptionHtml() {
+	    $text = $this->getCaption();
+	    $html = '';
+	    $lastOffset = 0;
+	    foreach ($this->getCaptionEntities() ?: [] as $entity) {
+		    $html .= e($this->substr($text, $lastOffset, $entity->getOffset() - $lastOffset));
+		    $lastOffset = $entity->getOffset() + $entity->getLength();
+		    if ($entity->getType() === 'bold') {
+			    $html .= '<b>'.e($this->getCaptionEntityText($entity)).'</b>';
+		    } elseif ($entity->getType() === 'italic') {
+			    $html .= '<i>'.e($this->getCaptionEntityText($entity)).'</i>';
+		    } elseif ($entity->getType() === 'code') {
+			    $html .= '<code>'.e($this->getCaptionEntityText($entity)).'</code>';
+		    } elseif ($entity->getType() === 'pre') {
+			    $html .= '<pre>'.e($this->getCaptionEntityText($entity)).'</pre>';
+		    } elseif ($entity->getType() === 'text_link') {
+			    $url = $entity->getUrl();
+			    $html .= "<a href=\"$url\">".e($this->getCaptionEntityText($entity)).'</a>';
+		    } elseif ($entity->getType() === 'text_mention') {
+			    $url = 'tg://user?id='.$entity->getUser()->getId();
+			    $html .= "<a href=\"$url\">".e($this->getCaptionEntityText($entity)).'</a>';
+		    } else {
+			    $html .= e($this->getCaptionEntityText($entity));
+		    }
+	    }
+
+	    $html .= e($this->substr($text, $lastOffset, mb_strlen($text)));
+	    return $html;
     }
 
     /**
