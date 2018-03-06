@@ -132,6 +132,22 @@ class TelegramResponseException extends TelegramSDKException
     }
 
     /**
+     * The number of seconds to retry after, or null if should not retry.
+     *
+     * @return int|null
+     */
+    public function retryAfter()
+    {
+        if ($params = $this->getResponseParameters()) {
+            if ($params->getRetryAfter()) {
+                return $params->getRetryAfter();
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the response entity used to create the exception.
      *
      * @return TelegramResponse
