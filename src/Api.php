@@ -409,6 +409,7 @@ class Api
      * $params = [
      *   'chat_id'              => '',
      *   'document'             => '',
+     *   'thumb'                => '',
      *   'caption'              => '',
      *   'disable_notification' => '',
      *   'reply_to_message_id'  => '',
@@ -422,6 +423,7 @@ class Api
      *
      * @var int|string $params ['chat_id']
      * @var string     $params ['document']
+     * @var string     $params ['thumb']
      * @var string     $params ['caption']
      * @var bool       $params ['disable_notification']
      * @var int        $params ['reply_to_message_id']
@@ -431,7 +433,7 @@ class Api
      */
     public function sendDocument(array $params)
     {
-        return $this->uploadFile('sendDocument', $params, ['document']);
+        return $this->uploadFile('sendDocument', $params, ['document', 'thumb']);
     }
 
     /**
@@ -608,6 +610,7 @@ class Api
      *   'duration'             => '',
      *   'width'                => '',
      *   'height'               => '',
+     *   'thumb'                => ''.
      *   'caption'              => '',
      *   'disable_notification' => '',
      *   'reply_to_message_id'  => '',
@@ -625,6 +628,7 @@ class Api
      * @var int        $params ['duration']
      * @var int        $params ['width']
      * @var int        $params ['height']
+     * @var int        $params ['thumb']
      * @var string     $params ['caption']
      * @var bool       $params ['disable_notification']
      * @var int        $params ['reply_to_message_id']
@@ -634,7 +638,49 @@ class Api
      */
     public function sendVideo(array $params)
     {
-        return $this->uploadFile('sendVideo', $params, ['video']);
+        return $this->uploadFile('sendVideo', $params, ['video', 'thumb']);
+    }
+
+    /**
+     * Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
+     * On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size,
+     * this limit may be changed in the future.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'              => '',
+     *   'animation'            => '',
+     *   'duration'             => '',
+     *   'width'                => '',
+     *   'height'               => '',
+     *   'thumb'                => ''.
+     *   'caption'              => '',
+     *   'disable_notification' => '',
+     *   'reply_to_message_id'  => '',
+     *   'reply_markup'         => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#sendanimation
+     *
+     * @param array    $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var string     $params ['animation']
+     * @var int        $params ['duration']
+     * @var int        $params ['width']
+     * @var int        $params ['height']
+     * @var int        $params ['thumb']
+     * @var string     $params ['caption']
+     * @var bool       $params ['disable_notification']
+     * @var int        $params ['reply_to_message_id']
+     * @var string     $params ['reply_markup']
+     *
+     * @return Message|Closure
+     */
+    public function sendAnimation(array $params)
+    {
+        return $this->uploadFile('sendAnimation', $params, ['animation', 'thumb']);
     }
 
     /**
@@ -679,6 +725,7 @@ class Api
      *   'video_note'           => '',
      *   'duration'             => '',
      *   'length'               => '',
+     *   'thumb'                => '',
      *   'disable_notification' => '',
      *   'reply_to_message_id'  => '',
      *   'reply_markup'         => '',
@@ -693,6 +740,7 @@ class Api
      * @var string     $params ['video_note']
      * @var int        $params ['duration']
      * @var int        $params ['length']
+     * @var string     $params ['thumb']
      * @var bool       $params ['disable_notification']
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
@@ -701,7 +749,7 @@ class Api
      */
     public function sendVideoNote(array $params)
     {
-        return $this->uploadFile('sendVideoNote', $params, ['video_note']);
+        return $this->uploadFile('sendVideoNote', $params, ['video_note', 'thumb']);
     }
 
     /**
@@ -1061,6 +1109,7 @@ class Api
      *   'title'                => '',
      *   'address'              => '',
      *   'foursquare_id'        => '',
+     *   'foursquare_type'      => '',
      *   'disable_notification' => '',
      *   'reply_to_message_id'  => '',
      *   'reply_markup'         => '',
@@ -1077,6 +1126,7 @@ class Api
      * @var string     $params ['title']
      * @var string     $params ['address']
      * @var string     $params ['foursquare_id']
+     * @var string     $params ['foursquare_type']
      * @var bool       $params ['disable_notification']
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']
@@ -1101,6 +1151,7 @@ class Api
      *   'phone_number'         => '',
      *   'first_name'           => '',
      *   'last_name'            => '',
+     *   'vcard'                => '',
      *   'disable_notification' => '',
      *   'reply_to_message_id'  => '',
      *   'reply_markup'         => '',
@@ -1115,6 +1166,7 @@ class Api
      * @var string     $params ['phone_number']
      * @var string     $params ['first_name']
      * @var string     $params ['last_name']
+     * @var string     $params ['vcard']
      * @var bool       $params ['disable_notification']
      * @var int        $params ['reply_to_message_id']
      * @var string     $params ['reply_markup']

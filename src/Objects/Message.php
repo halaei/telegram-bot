@@ -21,6 +21,7 @@ namespace Telegram\Bot\Objects;
  * @method MessageEntity[]    getCaptionEntities()        (Optional). For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption.
  * @method Audio              getAudio()                  (Optional). Message is an audio file, information about the file.
  * @method Document           getDocument()               (Optional). Message is a general file, information about the file.
+ * @method Animation          getAnimation()              (Optional). Message is an animation, information about the animation. For backward compatibility, when this field is set, the document field will also be set.
  * @method Game               getGame()                   (Optional). Message is a game, information about the game.
  * @method PhotoSize[]        getPhoto()                  (Optional). Message is a photo, available sizes of the photo.
  * @method Sticker            getSticker()                (Optional). Message is a sticker, information about the sticker.
@@ -62,6 +63,7 @@ class Message extends BaseObject
             'caption_entities'   => MessageEntity::class,
             'audio'              => Audio::class,
             'document'           => Document::class,
+            'animation'          => Animation::class,
             'game'               => Game::class,
             'photo'              => PhotoSize::class,
             'sticker'            => Sticker::class,
@@ -304,6 +306,7 @@ class Message extends BaseObject
             'text',
             'audio',
             'document',
+            // 'animation', disable animation type here for backward compatibility.
             'photo',
             'sticker',
             'video',
