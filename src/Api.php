@@ -783,9 +783,13 @@ class Api
             foreach ($params['media'] as $key => $media) {
                 if ($media instanceof InputMedia) {
                     $part = $media->extractAttachment('__ATTACHED_FILE__'.$key);
+                    $thumb = $media->extractAttachment('__ATTACHED_THUMB__'.$key, 'thumb');
                     $params['media'][$key] = $media->toArray();
                     if ($part) {
                         $attachments[] = $part;
+                    }
+                    if ($thumb) {
+                        $attachments[] = $thumb;
                     }
                 }
             }
@@ -1746,6 +1750,58 @@ class Api
 
         return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
+        }, $response);
+    }
+
+    /**
+     * Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a
+     * message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed
+     * arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its
+     * file_id or specify a URL. On success, if the edited message was sent by the bot, the edited Message is returned,
+     * otherwise True is returned.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'                  => '',
+     *   'message_id'               => '',
+     *   'inline_message_id'        => '',
+     *   'media'                    => '',
+     *   'reply_markup'             => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#editMessageCaption
+     *
+     * @param array    $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var int        $params ['message_id']
+     * @var string     $params ['inline_message_id']
+     * @var InputMedia $params ['media']
+     * @var string     $params ['reply_markup']
+     *
+     * @return true|Closure
+     */
+    public function editMessageMedia(array $params)
+    {
+        $attachments = [];
+
+        if (isset($params['media']) && ($media = $params['media']) instanceof InputMedia) {
+            $part = $media->extractAttachment('__ATTACHED_FILE__');
+            $thumb = $media->extractAttachment('__ATTACHED_THUMB__', 'thumb');
+            $params['media'] = $media->toJson();
+            if ($part) {
+                $attachments[] = $part;
+            }
+            if ($thumb) {
+                $attachments[] = $thumb;
+            }
+        }
+
+        $response = $this->post('editMessageMedia', $params, [], $attachments);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return $response->getResult();
         }, $response);
     }
 

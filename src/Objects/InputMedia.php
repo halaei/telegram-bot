@@ -19,12 +19,15 @@ class InputMedia extends BaseObject
     }
 
     /**
-     * @param $name
+     * @param string $name
+     * @param string $field
      * @return array|null
      */
-    public function extractAttachment($name)
+    public function extractAttachment($name, $field = 'media')
     {
-        $media = $this->getMedia();
+        if (! $media = $this[$field]) {
+            return null;
+        }
 
         $validUrl = filter_var($media, FILTER_VALIDATE_URL);
         if (is_string($media) && (is_file($media) || $validUrl)) {
@@ -36,7 +39,7 @@ class InputMedia extends BaseObject
         }
 
         if (is_resource($media) || $media instanceof StreamInterface) {
-            $this['media'] = 'attach://'.$name;
+            $this[$field] = 'attach://'.$name;
             return [
                 'name' => $name,
                 'contents' => $media,
