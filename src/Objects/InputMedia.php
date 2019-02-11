@@ -25,9 +25,10 @@ class InputMedia extends BaseObject
      */
     public function extractAttachment($name, $field = 'media')
     {
-        if (! $media = $this[$field]) {
+        if (! $this->has($field)) {
             return null;
         }
+        $media = $this[$field];
 
         $validUrl = filter_var($media, FILTER_VALIDATE_URL);
         if (is_string($media) && (is_file($media) || $validUrl)) {
