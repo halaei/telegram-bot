@@ -13,7 +13,7 @@ class InputStream extends InputFile
 
     protected function wrap($string)
     {
-        $stream = fopen('php://memory','r+');
+        $stream = fopen('php://memory','r+b');
         fwrite($stream, $string);
         rewind($stream);
         return $stream;
