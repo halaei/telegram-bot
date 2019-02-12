@@ -66,7 +66,7 @@ class SendMediaGroupTest extends \PHPUnit_Framework_TestCase
         $telegram = new Api($this->get_token());
 
         $result = $telegram->sendMediaGroup([
-            'chat_id' => getenv('CHAT_ID') ?: 123909455,
+            'chat_id' => getenv('CHAT_ID'),
             'media' => [
                 new InputMedia([
                     'type' => 'photo',
