@@ -22,8 +22,8 @@ This is a fork from https://github.com/irazasyed/telegram-bot-sdk
 Documentation for the SDK can be found on the [website][link-docs].
 
 ## Credits
-
 - [Syed Irfaq R.][link-author]
+- [Hamid Alaei](https://github.com/halaei)
 - [All Contributors][link-contributors]
 
 ## Disclaimer
