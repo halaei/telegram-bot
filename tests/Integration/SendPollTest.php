@@ -1,23 +1,14 @@
 <?php
 
-namespace Telegram\Bot\Tests;
-
-use Telegram\Bot\Api;
+namespace Telegram\Bot\Tests\Integration;
 
 class SendPollTest extends \PHPUnit_Framework_TestCase
 {
-    private function get_token()
-    {
-        if (! $token = getenv('TOKEN')) {
-            $this->markTestSkipped();
-        }
-
-        return $token;
-    }
+    use GetsToken;
 
     public function test_send_poll()
     {
-        $telegram = new Api($this->get_token());
+        $telegram = $this->get_api();
 
         $message = $telegram->sendPoll([
             'chat_id' => getenv('CHANNEL_ID'),

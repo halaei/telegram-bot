@@ -1,25 +1,17 @@
 <?php
 
-namespace Tests\Unit;
+namespace Telegram\Bot\Tests\Integration;
 
-use Telegram\Bot\Api;
 use Telegram\Bot\Objects\InputMedia;
 use Telegram\Bot\Objects\Message;
 
 class SendMediaGroupTest extends \PHPUnit_Framework_TestCase
 {
-    private function get_token()
-    {
-        if (! $token = getenv('TOKEN')) {
-            $this->markTestSkipped();
-        }
-
-        return $token;
-    }
+    use GetsToken;
 
     public function test_send_2_photos_by_id()
     {
-        $telegram = new Api($this->get_token());
+        $telegram = $this->get_api();
 
         $result = $telegram->sendMediaGroup([
             'chat_id' => getenv('CHAT_ID'),
@@ -63,19 +55,19 @@ class SendMediaGroupTest extends \PHPUnit_Framework_TestCase
 
     public function test_send_2_photos_by_file()
     {
-        $telegram = new Api($this->get_token());
+        $telegram = $this->get_api();
 
         $result = $telegram->sendMediaGroup([
             'chat_id' => getenv('CHAT_ID'),
             'media' => [
                 new InputMedia([
                     'type' => 'photo',
-                    'media' => fopen(__DIR__.'/files/photo1.png', 'rb'),
+                    'media' => fopen(__DIR__ . '/files/photo1.png', 'rb'),
                     'caption' => 'Test 1',
                 ]),
                 new InputMedia([
                     'type' => 'photo',
-                    'media' => fopen(__DIR__.'/files/photo2.png', 'rb'),
+                    'media' => fopen(__DIR__ . '/files/photo2.png', 'rb'),
                     'caption' => 'Test 2'
                 ]),
             ],
