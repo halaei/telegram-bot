@@ -14,6 +14,7 @@ namespace Telegram\Bot\Objects;
  * @method Chat               getForwardFromChat()        (Optional). For messages forwarded from a channel, information about the original channel.
  * @method int                getForwardFromMessageId()   (Optional). For forwarded channel posts, identifier of the original message in the channel.
  * @method string             getForwardSignature()       (Optional). For messages forwarded from channels, signature of the post author if present.
+ * @method string             getForwardSenderName()      (Optional). Sender's name for messages forwarded from users who disallow adding a link to their account in forwarded messages
  * @method int                getForwardDate()            (Optional). For forwarded messages, date the original message was sent in Unix time.
  * @method Message            getReplyToMessage()         (Optional). For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
  * @method string             getAuthorSignature()        (Optional). Signature of the post author for messages in channels.
@@ -32,6 +33,7 @@ namespace Telegram\Bot\Objects;
  * @method Contact            getContact()                (Optional). Message is a shared contact, information about the contact.
  * @method Location           getLocation()               (Optional). Message is a shared location, information about the location.
  * @method Venue              getVenue()                  (Optional). Message is a venue, information about the venue.
+ * @method Poll               getPoll()                   (Optional). Message is a native poll, information about the poll.
  * @method User               getNewChatMember()          (deprecated. Replaced with new_chat_members)(Optional). A new member was added to the group, information about them (this member may be the bot itself).
  * @method User               getLeftChatMember()         (Optional). A member was removed from the group, information about them (this member may be the bot itself).
  * @method string             getNewChatTitle()           (Optional). A chat title was changed to this value.
@@ -73,6 +75,7 @@ class Message extends BaseObject
             'contact'            => Contact::class,
             'location'           => Location::class,
             'venue'              => Venue::class,
+            'poll'               => Poll::class,
             'new_chat_members'   => User::class,
             'new_chat_member'    => User::class,
             'left_chat_member'   => User::class,

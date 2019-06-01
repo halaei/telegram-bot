@@ -16,6 +16,7 @@ namespace Telegram\Bot\Objects;
  * @method CallbackQuery        getCallbackQuery()          (Optional). Incoming callback query.
  * @method ShippingQuery        getShippingQuery()          (Optional). New incoming shipping query. Only for invoices with flexible price.
  * @method PreCheckOutQuery     getPreCheckOutQuery()       (Optional). New incoming pre-checkout query. Contains full information about checkout.
+ * @method Poll                 getPoll()                   (Optional). New poll state. Bots receive only updates about polls, which are sent or stopped by the bot.
  *
  * @link https://core.telegram.org/bots/api#update
  */
@@ -36,6 +37,7 @@ class Update extends BaseObject
             'callback_query'       => CallbackQuery::class,
             'shipping_query'       => ShippingQuery::class,
             'pre_checkout_query'   => PreCheckOutQuery::class,
+            'poll'                 => Poll::class,
         ];
     }
 
@@ -72,6 +74,7 @@ class Update extends BaseObject
             'callback_query',
             'shipping_query',
             'pre_checkout_query',
+            'poll',
         ];
 
         return $this->keys()

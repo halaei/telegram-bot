@@ -4,6 +4,7 @@ namespace Telegram\Bot\Tests;
 
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\PhotoSize;
+use Telegram\Bot\Objects\Poll;
 use Telegram\Bot\Objects\Update;
 use Telegram\Bot\Objects\VideoNote;
 
@@ -90,5 +91,16 @@ class UpdateTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(92860, $update->getMessage()->getVideoNote()->getFileSize());
         $this->assertInstanceOf(PhotoSize::class, $update->getMessage()->getVideoNote()->getThumb());
         $this->assertEquals('en-US', $update->getFrom()->getLanguageCode());
+    }
+
+    public function test_poll()
+    {
+        $update = new Update([
+            'update_id' => 674138757,
+            'poll' => []
+        ]);
+        $this->assertInstanceOf(Poll::class, $update->getPoll());
+        $this->assertEquals('poll', $update->detectType());
+        $this->assertTrue($update->isType('poll'));
     }
 }

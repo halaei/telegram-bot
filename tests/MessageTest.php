@@ -3,6 +3,8 @@
 namespace Telegram\Bot\Tests;
 
 use Telegram\Bot\Objects\Message;
+use Telegram\Bot\Objects\Poll;
+use Telegram\Bot\Objects\PollOption;
 use Telegram\Bot\Objects\User;
 
 class MessageTest extends \PHPUnit_Framework_TestCase
@@ -114,5 +116,30 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         ]);
         $this->assertTrue($message->hasHtmlCaption());
         $this->assertEquals('<a href="https://google.com">Search</a> <i>me</i>!', $message->getCaptionHtml());
+    }
+
+    public function test_poll()
+    {
+        $message = new Message([
+            'poll' => [
+                'id' => 'poll-id',
+                'question' => 'Do you agree?',
+                'options' => [
+                    [
+                        'text' => 'Yes',
+                        'voter_count' => 100,
+                    ],
+                    [
+                        'text' => 'No',
+                        'voter_count' => 1,
+                    ],
+                ],
+                'is_closed' => true,
+            ],
+        ]);
+        $this->assertInstanceOf(Poll::class, $message->getPoll());
+        $this->assertInstanceOf(PollOption::class, $message->getPoll()->getOptions()[0]);
+        $this->assertEquals('Yes', $message->getPoll()->getOptions()[0]->getText());
+        $this->assertEquals(100, $message->getPoll()->getOptions()[0]->getVoterCount());
     }
 }

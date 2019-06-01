@@ -1,3 +1,6 @@
+# Version 0.7.0
+- Support for Bot API 4.3
+
 # Version 0.6.0
 - Partial support for Bot API 4.1 (Passport not implemented yet).
 - Support for Bot API 3.6.

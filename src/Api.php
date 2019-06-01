@@ -16,6 +16,7 @@ use Telegram\Bot\Objects\GameHighScore;
 use Telegram\Bot\Objects\InputMedia;
 use Telegram\Bot\Objects\MaskPosition;
 use Telegram\Bot\Objects\Message;
+use Telegram\Bot\Objects\Poll;
 use Telegram\Bot\Objects\StickerSet;
 use Telegram\Bot\Objects\UnknownObject;
 use Telegram\Bot\Objects\Update;
@@ -1183,6 +1184,63 @@ class Api
 
         return $this->prepareResponse(function (TelegramResponse $response) {
             return new Message($response->getDecodedBody());
+        }, $response);
+    }
+
+    /**
+     * Use this method to send a native poll. A native poll can't be sent to a private chat.
+     * On success, the sent Message is returned.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'              => '',
+     *   'question'             => [],
+     *   'options'              => [],
+     *   'disable_notification' => false,
+     *   'reply_to_message_id'  => '',
+     *   'reply_markup'         => [],
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#sendpoll
+     *
+     * @param array $params
+     *
+     * @return Message|Closure
+     */
+    public function sendPoll(array $params)
+    {
+        $response = $this->post('sendPoll', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return new Message($response->getDecodedBody());
+        }, $response);
+    }
+
+    /**
+     * Use this method to stop a poll which was sent by the bot.
+     * On success, the stopped Poll with the final results is returned.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'              => '',
+     *   'message_id'           => '',
+     *   'reply_markup'         => [],
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#stoppoll
+     *
+     * @param array $params
+     *
+     * @return Poll|Closure
+     */
+    public function stopPoll(array $params)
+    {
+        $response = $this->post('stopPoll', $params);
+
+        return $this->prepareResponse(function (TelegramResponse $response) {
+            return new Poll($response->getDecodedBody());
         }, $response);
     }
 
