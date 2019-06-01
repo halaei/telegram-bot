@@ -36,7 +36,7 @@ class SendMediaGroupTest extends \PHPUnit_Framework_TestCase
 
     public function test_input_media()
     {
-        $file = fopen(__DIR__ . '/files/photo1.png', 'rb');
+        $file = fopen(__DIR__ . '/../files/photo1.png', 'rb');
         $media = new InputMedia([
             'type' => 'photo',
             'media' => $file,
@@ -62,12 +62,12 @@ class SendMediaGroupTest extends \PHPUnit_Framework_TestCase
             'media' => [
                 new InputMedia([
                     'type' => 'photo',
-                    'media' => fopen(__DIR__ . '/files/photo1.png', 'rb'),
+                    'media' => fopen(__DIR__ . '/../files/photo1.png', 'rb'),
                     'caption' => 'Test 1',
                 ]),
                 new InputMedia([
                     'type' => 'photo',
-                    'media' => fopen(__DIR__ . '/files/photo2.png', 'rb'),
+                    'media' => fopen(__DIR__ . '/../files/photo2.png', 'rb'),
                     'caption' => 'Test 2'
                 ]),
             ],
