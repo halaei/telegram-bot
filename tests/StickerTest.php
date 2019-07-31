@@ -2,11 +2,12 @@
 
 namespace Telegram\Bot\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Telegram\Bot\Objects\MaskPosition;
 use Telegram\Bot\Objects\Sticker;
 use Telegram\Bot\Objects\StickerSet;
 
-class StickerTest extends \PHPUnit_Framework_TestCase
+class StickerTest extends TestCase
 {
     public function test_sticker_object()
     {

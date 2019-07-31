@@ -2,13 +2,14 @@
 
 namespace Telegram\Bot\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\PhotoSize;
 use Telegram\Bot\Objects\Poll;
 use Telegram\Bot\Objects\Update;
 use Telegram\Bot\Objects\VideoNote;
 
-class UpdateTest extends \PHPUnit_Framework_TestCase
+class UpdateTest extends TestCase
 {
     public function test_channel_post()
     {

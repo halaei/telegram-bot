@@ -2,7 +2,9 @@
 
 namespace Telegram\Bot\Tests\Integration;
 
-class SendPollTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SendPollTest extends TestCase
 {
     use GetsToken;
 

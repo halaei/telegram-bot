@@ -2,10 +2,11 @@
 
 namespace Telegram\Bot\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Telegram\Bot\Objects\Chat;
 use Telegram\Bot\Objects\ChatPhoto;
 
-class ChatTest extends \PHPUnit_Framework_TestCase
+class ChatTest extends TestCase
 {
     public function test_it_is_private()
     {

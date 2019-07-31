@@ -2,7 +2,9 @@
 
 namespace Telegram\Bot\Tests\Integration;
 
-class SendLoginUrlTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SendLoginUrlTest extends TestCase
 {
     use GetsToken;
 
@@ -27,6 +29,7 @@ class SendLoginUrlTest extends \PHPUnit_Framework_TestCase
                 ],
             ])
         ]);
+        var_dump($message->getReplyMarkup()[0]);die;
         $this->assertEquals([
             'text' => 'Log in!',
             'url' => getenv('LOGIN_URL'),

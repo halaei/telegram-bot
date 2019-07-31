@@ -2,12 +2,13 @@
 
 namespace Telegram\Bot\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\Poll;
 use Telegram\Bot\Objects\PollOption;
 use Telegram\Bot\Objects\User;
 
-class MessageTest extends \PHPUnit_Framework_TestCase
+class MessageTest extends TestCase
 {
     public function test_text_mention()
     {

@@ -2,10 +2,11 @@
 
 namespace Telegram\Bot\Tests\Integration;
 
+use PHPUnit\Framework\TestCase;
 use Telegram\Bot\Objects\InputMedia;
 use Telegram\Bot\Objects\Message;
 
-class SendMediaGroupTest extends \PHPUnit_Framework_TestCase
+class SendMediaGroupTest extends TestCase
 {
     use GetsToken;
 

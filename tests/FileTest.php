@@ -2,9 +2,10 @@
 
 namespace Telegram\Bot\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Telegram\Bot\Objects\File;
 
-class FileTest extends \PHPUnit_Framework_TestCase
+class FileTest extends TestCase
 {
     public function test_get_url()
     {

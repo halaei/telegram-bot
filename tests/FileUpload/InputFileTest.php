@@ -2,12 +2,13 @@
 
 namespace Telegram\Bot\Tests\FileUpload;
 
+use PHPUnit\Framework\TestCase;
 use Telegram\Bot\FileUpload\FileId;
 use Telegram\Bot\FileUpload\HttpUrl;
 use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\FileUpload\InputStream;
 
-class InputFileTest extends \PHPUnit_Framework_TestCase
+class InputFileTest extends TestCase
 {
     public function test_input_stream_open()
     {
