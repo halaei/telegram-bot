@@ -29,10 +29,9 @@ class SendLoginUrlTest extends TestCase
                 ],
             ])
         ]);
-        var_dump($message->getReplyMarkup()[0]);die;
         $this->assertEquals([
             'text' => 'Log in!',
             'url' => getenv('LOGIN_URL'),
-        ], $message->getReplyMarkup()[0][0]);
+        ], $message->getReplyMarkup()['inline_keyboard'][0][0]);
     }
 }
