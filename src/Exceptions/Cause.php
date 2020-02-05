@@ -49,7 +49,7 @@ class Cause
     {
         $closure = function (\Exception $e) {
             return $e instanceof TelegramResponseException &&
-            Str::contains(mb_strtolower($e->getMessage()), 'wrong file identifier');
+            Str::contains(mb_strtolower($e->getMessage()), ['wrong file identifier', 'wrong remote file id specified']);
         };
 
         return is_null($e) ? $closure : $closure($e);
