@@ -1,3 +1,5 @@
+# Version 0.8.1
+- Support Laravel 8.*
 # Version 0.8.0
 - Stop supporting PHP 7.1, 7.0 and 5.*
 - Stop supporting Laravel 5.7

@@ -21,6 +21,8 @@ matrix:
       env: ILLUMINATE_VERSION=6.*
     - php: 7.4
       env: ILLUMINATE_VERSION=7.*
+    - php: 7.4
+      env: ILLUMINATE_VERSION=8.*
 
 before_script:
   - travis_retry composer self-update
