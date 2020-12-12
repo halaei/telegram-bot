@@ -1,7 +1,5 @@
 language: php
 
-dist: trusty
-
 sudo: false
 
 matrix:
@@ -22,6 +20,8 @@ matrix:
     - php: 7.4
       env: ILLUMINATE_VERSION=7.*
     - php: 7.4
+      env: ILLUMINATE_VERSION=8.*
+    - php: 8
       env: ILLUMINATE_VERSION=8.*
 
 before_script:
