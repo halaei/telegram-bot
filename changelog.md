@@ -1,3 +1,7 @@
+# Version 0.9.0
+- Laravel 8.x only
+- Bugfix InputFile::open().
+
 # Version 0.8.1
 - Support Laravel 8.*
 - Support for PHP 8.0

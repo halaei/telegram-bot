@@ -14,7 +14,7 @@ class InputFileTest extends TestCase
     {
         $file = new InputStream('This is test.');
         $stream = $file->open();
-        $this->assertRegExp('/^([0-9a-zA-Z]{16})$/', $stream->getMetadata('uri'));
+        $this->assertMatchesRegularExpression('/^([0-9a-zA-Z]{16})$/', $stream->getMetadata('uri'));
         $this->assertEquals('This is test.', $stream->getContents());
     }
 

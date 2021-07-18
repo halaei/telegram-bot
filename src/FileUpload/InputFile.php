@@ -71,7 +71,7 @@ class InputFile implements InputFileInterface
             throw new TelegramSDKException('Failed to create InputFile entity. Unable to read resource: '.$this->path.'.');
         }
 
-        return Psr7\try_fopen($this->path, 'rb');
+        return Psr7\Utils::tryFopen($this->path, 'rb');
     }
 
     /**
